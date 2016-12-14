@@ -1,5 +1,6 @@
 import pygame
 from enum import Enum
+import time
 
 white = pygame.Color(255, 255, 255)
 black = pygame.Color(0, 0, 0)
@@ -28,26 +29,38 @@ class OutputScreen:
 
     def __init__(self, screen):
         self.screen = screen
-        quadrants = []
-        w = screen.width
-        h = screen.height
-        quadrants[0] = self.screen.subsurface(pygame.Rect(0, 0, w / 2, h / 2))
-        quadrants[1] = self.screen.subsurface(pygame.Rect(w / 2, 0, w, h / 2))
-        quadrants[2] = self.screen.subsurface(pygame.Rect(0, h / 2, w / 2, h))
-        quadrants[3] = self.screen.subsurface(pygame.Rect(w / 2, h / 2, w, h))
-        quadrants[4] = self.screen.subsurface(pygame.Rect(0, 0, w, h))
-        self.quadrants
+        quadrants = [None] * 5
+        w = screen.get_width() - 1
+        h = screen.get_height() - 1
+        quadrant_size = (w / 2, h / 2)
+        quadrants[0] = self.screen.subsurface(pygame.Rect((0, 0), quadrant_size))
+        quadrants[1] = self.screen.subsurface(pygame.Rect((w / 2, 0), quadrant_size))
+        quadrants[2] = self.screen.subsurface(pygame.Rect((0, h / 2), quadrant_size))
+        quadrants[3] = self.screen.subsurface(pygame.Rect((w / 2, h / 2), quadrant_size))
+        quadrants[4] = self.screen.subsurface(pygame.Rect((0, 0), (w, h)))
+        self.quadrants = quadrants
 
-    def drawText(self, message, location=Positions.bottom_left):
-        screen = self.screen
+        self.identify()
+    
+    def identify(self):
+        color = black
+        for x in range(4):
+            color = map(lambda x: x+60, color)
+            color[3] = 255
+            self.quadrants[x].fill(color)
+
+    def drawText(self, message, location=Surfaces.DOWN_LEFT):
+        screen = self.quadrants[location.value]
         text_width = 600
         text_height = 60
-        surface_width = self.screen.get_width()
-        surface_height = self.screen.get_height()
-        centered = location(surface_width, surface_height,
-                                         text_width, text_height)
-        screen.blit(pygame.font.SysFont("freesansserif", 40, bold=1)
-        .render(message, 1, white), (centered[0] + 10, centered[1] + 10));
+        surface_width = screen.get_width()
+        surface_height = screen.get_height()
+       
+        #Clears text
+        self.identify()
+        font = pygame.font.SysFont("freesansserif", 30);
+        screen.blit(font.render(message, 1, white), 
+        screen.get_rect());
         pygame.display.update();
 
     def drawImage(self, image_data, surface=Surfaces.UP_LEFT):
@@ -57,3 +70,11 @@ class OutputScreen:
         frame = pygame.image.frombuffer(data, size, mode)
         self.screen.blit(frame, (0, 0))
         pygame.display.update()
+
+
+if __name__ == "__main__":
+    pygame.init()
+    screen = pygame.display.set_mode([1200, 800])
+    pygame.display.update()
+    OutputScreen(screen)
+    time.sleep(2)
