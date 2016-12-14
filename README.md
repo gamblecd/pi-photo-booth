@@ -1,7 +1,6 @@
 # pi-photo-booth
 Photo Booth for Canon EOS 40D
 
-
 #Required programs
 Gphoto2 `sudo apt-get install gphoto2`
 
@@ -47,3 +46,5 @@ Display Viewfinder for 6 seconds
 Take Picture
 Repeat times
 
+=======
+#Installation

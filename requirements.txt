@@ -1,0 +1,4 @@
+enum34==1.1.6
+gphoto2==1.5.0
+Pillow==3.4.2
+pygame==1.9.2

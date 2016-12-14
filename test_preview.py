@@ -4,7 +4,6 @@ import booth
 import preview as pv
 import models
 import gphoto2 as gp
-import gphoto2_shell as gps
 
 from PIL import Image
 
@@ -70,4 +69,4 @@ if __name__ == "__main__":
     #CameraTest().testOpenViewFinder()
     #CameraTest().testAutoFocusToLivePreviewToCapture()
     boot = booth.PhotoBooth()
-    boot.takePictures(2)
+    #boot.takePictures(2)
