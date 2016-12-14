@@ -1,0 +1,25 @@
+# Notes
+Photo Booth Options
+
+Initialize
+Set Large JPEG
+Set flash autofocus
+
+First focus:
+    autofocus capture-image
+
+Options
+
+Number of Pictures to take
+
+InitialTime
+Time between pictures
+Autoupload (facebook group)
+Email
+
+
+Actions
+Press Button
+Display Viewfinder for 6 seconds
+Take Picture
+Repeat times

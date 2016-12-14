@@ -46,9 +46,8 @@ class PhotoBooth:
         loadMessageThread = threading.Thread(target=self.__loadMessageAsync)
         loadMessageThread.start()
         return loadMessageThread
-        
+
     def __init__(self):
-        
         self.loaded = False
         self.__initScreen()
         messageThread = self.__loadMessage();
@@ -72,9 +71,6 @@ class PhotoBooth:
         cam = self.camera
         cam.focus()
         cam.capture()
-
-    def save_picture(file_data, location):
-        file_data.save(location)
 
     def save(self, file_data, folderName = EVENT_NAME):
         cam = self.camera
@@ -101,7 +97,7 @@ class PhotoBooth:
             else:
                 self._boothAction()
    
-    def boothAction(self, count=FRAME_COUNT):
+    def photo_shoot(self, count=FRAME_COUNT):
         #cam = models.PhotoBoothCamera()
         cam = self.camera
         self.__updateFocus()
@@ -110,7 +106,7 @@ class PhotoBooth:
 
         images = [self.previewAndSnap() for _ in range(count)]
         
-        self.cam.mirror_down()
+        cam.mirror_down()
 
         #Actions with list of 4 photos
         self.performActions(images)
@@ -122,7 +118,7 @@ class PhotoBooth:
     def previewAndSnap(self):
         cam = self.camera
         #Live Preview
-        self.previewer.preview(cam, PhotoBooth.LIVE_PREVIEW_SECONDS)
+        self.previewer.preview(cam.generate_preview, PhotoBooth.LIVE_PREVIEW_SECONDS)
         #Capture
         file_data = self.camera.capture()
         #Save

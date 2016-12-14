@@ -34,6 +34,10 @@ class PhotoBoothCamera:
     def get_image(self, file):
         return self.camera.file_get(file.folder, file.name, gp.GP_FILE_TYPE_NORMAL, self.context)
 
+    def generate_preview(self):
+        while True:
+            yield self.camera.capture_preview(self.context)
+
     def capture_preview(self):
         return self.camera.capture_preview(self.context)
 
