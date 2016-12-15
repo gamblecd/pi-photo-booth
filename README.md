@@ -27,6 +27,12 @@ source bin/activate
 pip install -r requirements.txt
 ```
 
+# Run Tests
+
+```
+python -m pi_photobooth.tests.test_preview
+```
+
 # Usage
 
 Plug a camera into the computer.

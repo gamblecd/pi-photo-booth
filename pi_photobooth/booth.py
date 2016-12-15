@@ -188,7 +188,7 @@ class PhotoBooth:
         return local_file
 
     def performActions(self, images):
-        process_thread = threading.Thread(target=self.actions.combineAndUploadToEvent, args=[images, PhotoBooth.EVENT_NAME])
+        process_thread = threading.Thread(target=self.actions.combine_and_upload_to_event, args=[images, PhotoBooth.EVENT_NAME])
         process_thread.start()
         self.processes.append(process_thread)
 
@@ -209,8 +209,6 @@ class PhotoBooth:
             self.performActions(images)
         self._print("ActionsPerformed")
         pass
-   
-
 
     def _previewAndSnap(self):
         #cam = self.camera
@@ -243,8 +241,6 @@ class PhotoBooth:
         self.previewer.review(mockImage("test/test1.png").filename)
         self._addCompliment()
         self.previewer.preview(generator, PhotoBooth.REVIEW_SECONDS,  self.outputScreen.get_screen(Surfaces.DOWN_RIGHT))
-        
-        
         
         #Review
         self._print("DONE")

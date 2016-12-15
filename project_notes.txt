@@ -23,3 +23,5 @@ Press Button
 Display Viewfinder for 6 seconds
 Take Picture
 Repeat times
+
+ImageProcessor().combine().vertically().process()
