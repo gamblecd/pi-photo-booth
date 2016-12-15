@@ -60,11 +60,6 @@ class OutputScreen:
 
     def drawText(self, message, location=Surfaces.DOWN_LEFT):
         screen = self.quadrants[location.value]
-        text_width = 600
-        text_height = 60
-        surface_width = screen.get_width()
-        surface_height = screen.get_height()
-       
         #Clears text
         self.identify()
         font = pygame.font.SysFont("freesansserif", 30);
