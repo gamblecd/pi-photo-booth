@@ -11,7 +11,9 @@ class Surfaces(Enum):
     DOWN_LEFT = 2
     DOWN_RIGHT = 3
     LIVE_PREVIEW = 3
-    FULLSCREEN = 4
+    LEFT_SIDE = 4
+    RIGHT_SIDE = 5
+    FULLSCREEN = 6
 
 
 class Positions:
@@ -29,25 +31,32 @@ class OutputScreen:
 
     def __init__(self, screen):
         self.screen = screen
-        quadrants = [None] * 5
-        w = screen.get_width() - 1
-        h = screen.get_height() - 1
+        quadrants = [None] * 7
+        w = screen.get_width()
+        h = screen.get_height() 
         quadrant_size = (w / 2, h / 2)
+        vertical_half_size = (w / 2, h)
         quadrants[0] = self.screen.subsurface(pygame.Rect((0, 0), quadrant_size))
         quadrants[1] = self.screen.subsurface(pygame.Rect((w / 2, 0), quadrant_size))
         quadrants[2] = self.screen.subsurface(pygame.Rect((0, h / 2), quadrant_size))
         quadrants[3] = self.screen.subsurface(pygame.Rect((w / 2, h / 2), quadrant_size))
-        quadrants[4] = self.screen.subsurface(pygame.Rect((0, 0), (w, h)))
+        quadrants[4] = self.screen.subsurface(pygame.Rect((0, 0), vertical_half_size))
+        quadrants[5] = self.screen.subsurface(pygame.Rect((w / 2, 0), vertical_half_size))
+        quadrants[6] = self.screen.subsurface(pygame.Rect((0, 0), (w, h)))
         self.quadrants = quadrants
 
         self.identify()
     
+    def get_screen(self, surface):
+        return self.quadrants[surface.value]
+
     def identify(self):
         color = black
         for x in range(4):
             color = map(lambda x: x+60, color)
             color[3] = 255
             self.quadrants[x].fill(color)
+        pygame.display.update();
 
     def drawText(self, message, location=Surfaces.DOWN_LEFT):
         screen = self.quadrants[location.value]

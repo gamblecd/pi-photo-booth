@@ -2,15 +2,26 @@ import models
 import pygame
 import gphoto2 as gp
 import preview as pv
-import outputs
+from outputs import OutputScreen, Surfaces
 import os
 import time
 import threading
 from background import actions
 ONLINE = False
 
+class mockImage():
+    
+    def __init__(self, filename):
+        self.filename=filename
+
+    def get_data_and_size(self):
+        f = open(self.filename,'rb');
+        return f.read()
+
+
 class PhotoBooth:
     LIVE_PREVIEW_SECONDS = 8
+    REVIEW_SECONDS = 2
     FRAME_COUNT = 4
     EVENT_NAME = "TestEventForUpload"
 
@@ -24,7 +35,7 @@ class PhotoBooth:
         pygame.init()
         self.screen = pygame.display.set_mode([1200, 800])
         pygame.display.update()
-        self.outputScreen = outputs.OutputScreen(self.screen)
+        self.outputScreen = OutputScreen(self.screen)
 
     def __initPreviewer(self):
         self.previewer = pv.Previewer(self.screen)
@@ -118,13 +129,15 @@ class PhotoBooth:
     def previewAndSnap(self):
         cam = self.camera
         #Live Preview
-        self.previewer.preview(cam.generate_preview, PhotoBooth.LIVE_PREVIEW_SECONDS)
+        generator = cam.generate_preview()
+        self.previewer.preview(generator, PhotoBooth.LIVE_PREVIEW_SECONDS)
         #Capture
-        file_data = self.camera.capture()
+        file_data = cam.capture()
         #Save
         local_file = self.save(file_data)
         #Review
         self.previewer.review(local_file)
+        self.previewer.preview(generator, PhotoBooth.REVIEW_SECONDS,  self.outputScreen.get_screen(Surfaces.DOWN_RIGHT))
         self._print("DONE")
 
         return local_file
@@ -153,20 +166,41 @@ class PhotoBooth:
         pass
    
 
+
     def _previewAndSnap(self):
+        #cam = self.camera
+        #Live Preview
+        def frame_gen():
+            m1 = mockImage("test/test1.jpeg")
+            m2 = mockImage("test/test1.png")
+            while True:
+                if int(time.time()) % 2 == 0:
+                    yield m1
+                else:
+                    yield m2
+        generator = frame_gen()
+        
+        #Preview
         self._print("Live Preview")
         time.sleep(.25)
-
+        self.previewer.preview(generator, PhotoBooth.LIVE_PREVIEW_SECONDS)
         #Capture
         self._print("Capture")
         time.sleep(.25)
-
-        #Save And Review
+        
+        #Save
         self._print("Save Image")
         time.sleep(.25)
+        
         #Review
         self._print("Review")
         time.sleep(.25)
+        self.previewer.review(mockImage("test/test1.png").filename)
+        self.previewer.preview(generator, PhotoBooth.REVIEW_SECONDS,  self.outputScreen.get_screen(Surfaces.DOWN_RIGHT))
+        
+        
+        
+        #Review
         self._print("DONE")
 
         return "test/test1.jpeg"

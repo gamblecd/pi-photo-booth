@@ -3,6 +3,8 @@ import urllib
 import subprocess
 import urlparse
 
+FACEBOOK_APP_ID = ""
+FACEBOOK_APP_SECRET = ""
 FACEBOOK_PROFILE_ID = ""
 FACEBOOK_ACCESS_TOKEN = ""
 class FacebookUploader:
