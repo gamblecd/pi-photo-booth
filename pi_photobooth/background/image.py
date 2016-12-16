@@ -1,11 +1,10 @@
-"""Image Processor 
+"""Image Processor
 
 Functionality to perform on a series of images.
 
 combine:
     combines all the images into a single image, in the direction specified
 """
-import sys
 from enum import Enum
 from PIL import Image
 
@@ -57,29 +56,3 @@ class ImageProcessor:
 
         new_img.save(filename)
         return filename
-  
-    def combine_v(self, image_arr):
-        filename = "{}_photoBooth.jpg".format(image_arr[0].split(".")[0])
-        imgs = map(Image.open, image_arr)
-        widths, heights = zip(*(i.size for i in imgs))
-
-        total_height = sum(heights)
-        total_width = max(widths)
-
-        new_im = Image.new('RGB', (total_width, total_height))
-
-        y_offset = 0
-        for img in imgs:
-            new_im.paste(img, (0, y_offset))
-            y_offset += img.size[1]
-
-        new_im.save(filename)
-        return filename
-
-
-
-if __name__ == "__main__":
-    testee = ImageProcessor()
-    testee.combine_v(["test/test1.jpeg", "test/test.jpeg", "test/test.jpeg"])
-    #CameraTest().testOpenViewFinder()
-    #CameraTest().testAutoFocusToLivePreviewToCapture()

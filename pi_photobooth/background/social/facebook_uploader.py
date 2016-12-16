@@ -30,28 +30,28 @@ class FacebookUploader:
         print ("Successfully Logged in")
         return oauth_access_token
 
-    def __init__(self):
+    def __init__(self, graph=facebook.GraphAPI(FACEBOOK_ACCESS_TOKEN)):
         print("Initializing Uploader")
         self.events = None
        #self.token = self.login()
-        self.graph = facebook.GraphAPI(FACEBOOK_ACCESS_TOKEN)
+        self.graph = graph
         print("Connected to Facebook")
 
 
-    def getEvents(self):
+    def get_events(self):
         if self.events is None:
             self.events = self.graph.get_object("me/events", fields="name")
         return self.events
 
-    def findEvent(self, eventName):
-        events = self.getEvents();
+    def event(self, eventName):
+        events = self.get_events();
         for x in events.get("data"):
             if eventName in x.get("name"):
                 print("{} : {}".format(eventName, x.get("id")))
                 return x.get("id")
         return None;
     
-    def uploadToEvent(self, imageName, id):
+    def upload_to_event(self, imageName, id):
         ret = self.graph.put_photo(image=open(imageName, 'rb'), album_path=id + "/photos")
         return ret
     

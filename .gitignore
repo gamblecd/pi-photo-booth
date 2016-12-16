@@ -47,6 +47,7 @@ htmlcov/
 .coverage.*
 .cache
 nosetests.xml
+.nose*
 coverage.xml
 *,cover
 .hypothesis/
@@ -86,6 +87,7 @@ celerybeat-schedule
 
 # pip
 pip*
+man/
 # virtualenv
 venv/
 ENV/

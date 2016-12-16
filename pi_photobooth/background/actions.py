@@ -1,26 +1,27 @@
 import social
-from social import facebook_uploader as fu
+from social.facebook_uploader import FacebookUploader
 from image import ImageProcessor, Directions
 class Actions:
-    def __init__(self):
-        self.fb = fu.FacebookUploader()
-        self.image_processor = ImageProcessor();
+
+    def __init__(self, uploader=FacebookUploader(), image_proc=ImageProcessor()):
+        self.fb = uploader
+        self.image_processor = image_proc
         print("Actions Loaded")
     
-    def combine_and_upload_to_event(self, img_arr, eventName):
+    def define_name(self, img_arr):
+        if not img_arr:
+            return ""
+        return "{}_photoBooth.jpg".format(img_arr[0].split(".")[0])
+
+    def combine_and_upload_to_event(self, img_arr, event_name):
+        if not img_arr:
+            return ""
         print("Grabbing Event Id")
-        eventId = self.fb.findEvent(eventName);
+        event_id = self.fb.event(event_name);
 
         print("Processing Image")
-        imageName = "{}_photoBooth.jpg".format(img_arr[0].split(".")[0])
-        newImgName = self.image_processor.combine(img_arr, imageName, Directions.VERTICAL)
+        image_name = self.define_name(img_arr)
+        new_img_name = self.image_processor.combine(img_arr, image_name, Directions.VERTICAL)
 
         print("Uploading new Image to Event")
-        return self.fb.uploadToEvent(newImgName, eventId).get("post_id")
-
-
-if __name__ == "__main__":
-    testee = Actions()
-    testee.combine_and_upload_to_event(["test/test1.jpeg", "test/test.jpeg", "test/test.jpeg"], "TestEventForUpload")
-    #CameraTest().testOpenViewFinder()
-    #CameraTest().testAutoFocusToLivePreviewToCapture()
+        return self.fb.upload_to_event(new_img_name, event_id).get("post_id")
