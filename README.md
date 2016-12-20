@@ -3,7 +3,7 @@
 ### Description
 Designed to implement a Photo booth with a Raspberry Pi, and using a Canon EOS 40D as the camera.
 Goals were to be able to take a series of pictures, while showing a live preview, and the ability to review those images.
-Currently uses pygame to display 
+Currently uses pygame to display
 
 
 # Prerequisites
@@ -50,4 +50,5 @@ To begin a Photo Shoot, press Enter, or a button
 # Future Tasks
 
 * Remove use of pygame, it has issues trying to show text over what should essentially be a video stream,
-* Upload to multiple social sites, Instagram? Twitter? 
+* Upload to multiple social sites, Instagram? Twitter?
+* Proper logging to the console, and to the screen

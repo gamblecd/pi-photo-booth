@@ -47,11 +47,9 @@ class FacebookUploader:
         events = self.get_events();
         for x in events.get("data"):
             if eventName in x.get("name"):
-                print("{} : {}".format(eventName, x.get("id")))
                 return x.get("id")
         return None;
-    
+
     def upload_to_event(self, imageName, id):
         ret = self.graph.put_photo(image=open(imageName, 'rb'), album_path=id + "/photos")
         return ret
-    

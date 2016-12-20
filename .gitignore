@@ -36,6 +36,9 @@ var/
 *.manifest
 *.spec
 
+#Ninja IDE
+*.nja
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt

@@ -33,7 +33,7 @@ class OutputScreen:
         self.screen = screen
         quadrants = [None] * 7
         w = screen.get_width()
-        h = screen.get_height() 
+        h = screen.get_height()
         quadrant_size = (w / 2, h / 2)
         vertical_half_size = (w / 2, h)
         quadrants[0] = self.screen.subsurface(pygame.Rect((0, 0), quadrant_size))
@@ -45,8 +45,8 @@ class OutputScreen:
         quadrants[6] = self.screen.subsurface(pygame.Rect((0, 0), (w, h)))
         self.quadrants = quadrants
 
-        self.identify()
-    
+        #self.identify()
+
     def get_screen(self, surface):
         return self.quadrants[surface.value]
 
@@ -58,12 +58,18 @@ class OutputScreen:
             self.quadrants[x].fill(color)
         pygame.display.update();
 
-    def drawText(self, message, location=Surfaces.DOWN_LEFT):
+    def clear(self):
+        self.screen.fill(black)
+        pygame.display.update()
+
+    def drawText(self, message, erase=False, location=Surfaces.DOWN_LEFT):
         screen = self.quadrants[location.value]
         #Clears text
-        self.identify()
+        #self.identify()
+        if erase:
+            screen.fill(black)
         font = pygame.font.SysFont("freesansserif", 30);
-        screen.blit(font.render(message, 1, white), 
+        screen.blit(font.render(message, 1, white),
         screen.get_rect());
         pygame.display.update();
 

@@ -7,6 +7,10 @@ class PhotoBoothCamera:
 
     def __init__(self, context=gp.Context()):
         self.context = context
+        self.initiated = False
+
+    def init(self):
+        self.initiated = True
         self.set_camera(gp.Camera())
 
     def set_camera(self, camera):
@@ -29,6 +33,12 @@ class PhotoBoothCamera:
 
     def image_format(self):
         return self.get_config().get("imageformat").value()
+
+    def wait_for_event(self, timeout, event_type, event_data):
+        return self.wait_for_event(timeout, event_type, event_data, self.context)
+
+    def trigger_capture(self):
+        return self.camera.trigger_capture(self.context)
 
     def capture(self):
         return self.camera.capture(gp.GP_CAPTURE_IMAGE, self.context)

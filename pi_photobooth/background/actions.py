@@ -7,7 +7,7 @@ class Actions:
         self.fb = uploader
         self.image_processor = image_proc
         print("Actions Loaded")
-    
+
     def define_name(self, img_arr):
         if not img_arr:
             return ""
@@ -24,4 +24,6 @@ class Actions:
         new_img_name = self.image_processor.combine(img_arr, image_name, Directions.VERTICAL)
 
         print("Uploading new Image to Event")
-        return self.fb.upload_to_event(new_img_name, event_id).get("post_id")
+        post_id = self.fb.upload_to_event(new_img_name, event_id).get("post_id")
+        print("Uploaded...")
+        return post_id

@@ -8,12 +8,12 @@ class FacebookTest:
 
     def testLogin(self):
         fb.FacebookUploader()
-    
+
     def testEvents(self):
         uploader = fb.FacebookUploader()
-        id = uploader.findEvent("TestEventForUpload")
-        uploader.uploadToEvent("test.jpeg", id);
-        
+        id = uploader.event("Christmas Party")
+        print(id)
+
 
 
 if __name__ == "__main__":

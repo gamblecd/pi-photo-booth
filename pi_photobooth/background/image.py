@@ -50,7 +50,6 @@ class ImageProcessor:
         offsets = direction.offset(0, 0)
         offset = offsets.send(None)
         for img in opened_imgs:
-            print(offset)
             new_img.paste(img, offset)
             offset = offsets.send(img.size)
 
