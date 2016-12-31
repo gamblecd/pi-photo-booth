@@ -2,6 +2,7 @@ import pygame
 from enum import Enum
 import time
 
+
 white = pygame.Color(255, 255, 255)
 black = pygame.Color(0, 0, 0)
 
@@ -15,7 +16,6 @@ class Surfaces(Enum):
     RIGHT_SIDE = 5
     FULLSCREEN = 6
 
-
 class Positions:
 
     @classmethod
@@ -25,7 +25,6 @@ class Positions:
     @classmethod
     def centered(self, pW, pH, cW, cH):
         return ((pW / 2) - (cW / 2), ((pH / 2) - (cH / 2)))
-
 
 class OutputScreen:
 
@@ -83,8 +82,10 @@ class OutputScreen:
 
 
 if __name__ == "__main__":
-    pygame.init()
-    screen = pygame.display.set_mode([1200, 800])
-    pygame.display.update()
-    OutputScreen(screen)
-    time.sleep(2)
+    pass
+    #KivyScreen().run()
+    # pygame.init()
+    # screen = pygame.display.set_mode([1200, 800])
+    # pygame.display.update()
+    # OutputScreen(screen)
+    # time.sleep(2)

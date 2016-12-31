@@ -14,7 +14,6 @@ import sys, select
 
 import Queue
 
-
 ONLINE = True
 MOCK = False
 
@@ -61,7 +60,7 @@ class PhotoBooth:
     LIVE_PREVIEW_SECONDS = 10
     REVIEW_SECONDS = 4
     FRAME_COUNT = 4
-    EVENT_NAME = "Huskies in the Peach Bowl"
+    EVENT_NAME = "Christmas Party"
 
     def __initActions(self):
         print("loading Actions")
@@ -72,7 +71,7 @@ class PhotoBooth:
 
     def __initScreen(self):
         pygame.init()
-        self.screen = pygame.display.set_mode([1920, 1080], pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode([1920, 1200], pygame.FULLSCREEN)
         pygame.display.update()
         self.outputScreen = OutputScreen(self.screen)
 
@@ -89,7 +88,7 @@ class PhotoBooth:
             self._camera.init()
             print("loading: Camera -- Complete")
         else:
-           # self._camera.init()
+            self._camera.init()
             print("loading: Camera -- Mock -- Complete")
 
 
@@ -292,33 +291,33 @@ class PhotoBooth:
         out_size = out_screen.get_rect().size
         out_screen.blit(font_surface, ((out_size[0]-font_size[0]) / 2, (out_size[1]-font_size[1]) / 2))
 
-    def previewAndSnap(self):
-        cam = self.camera
-        #Live Preview
-        #self._print("Live Preview")
-        generator = cam.generate_preview()
-        self.previewer.preview(generator, PhotoBooth.LIVE_PREVIEW_SECONDS)
+    # def previewAndSnap(self):
+    #     cam = self.camera
+    #     #Live Preview
+    #     #self._print("Live Preview")
+    #     generator = cam.generate_preview()
+    #     self.previewer.preview(generator, PhotoBooth.LIVE_PREVIEW_SECONDS)
 
-        #Capture
-        self.outputScreen.drawText("Capturing, Hold Very Still!")
-        cam.focus()
+    #     #Capture
+    #     self.outputScreen.drawText("Capturing, Hold Very Still!")
+    #     cam.focus()
 
-        file_data = cam.capture()
+    #     file_data = cam.capture()
 
-        #Save
-        #self._print("Saving Image")
-        local_file = self.save(file_data)
-        #Review
+    #     #Save
+    #     #self._print("Saving Image")
+    #     local_file = self.save(file_data)
+    #     #Review
 
-        #self._print("Review")
-        self.previewer.review(local_file)
-        self._addCompliment()
-        self.previewer.preview(generator, PhotoBooth.REVIEW_SECONDS,  self.outputScreen.get_screen(Surfaces.DOWN_RIGHT))
+    #     #self._print("Review")
+    #     self.previewer.review(local_file)
+    #     self._addCompliment()
+    #     self.previewer.preview(generator, PhotoBooth.REVIEW_SECONDS,  self.outputScreen.get_screen(Surfaces.DOWN_RIGHT))
 
-        self.outputScreen.clear()
-        #self._print("DONE")
+    #     self.outputScreen.clear()
+    #     #self._print("DONE")
 
-        return local_file
+    #     return local_file
 
     def performActions(self, images):
         process_thread = threading.Thread(target=self.actions.combine_and_upload_to_event, args=[images, PhotoBooth.EVENT_NAME])
@@ -346,7 +345,7 @@ class PhotoBooth:
 
         pass
 
-    def _previewAndSnap(self):
+    def previewAndSnap(self):
         #cam = self.camera
         #Live Preview
         def frame_gen():
@@ -383,7 +382,6 @@ class PhotoBooth:
 
         return "pi_photobooth/tests/imgs/test.jpg"
 
-BtnPin = 12
 
 if __name__ == "__main__":
     booth = PhotoBooth()

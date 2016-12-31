@@ -11,7 +11,7 @@ class FacebookTest:
 
     def testEvents(self):
         uploader = fb.FacebookUploader()
-        id = uploader.event("Christmas Party")
+        id = uploader.event("Huskies in the Peach Bowl")
         print(id)
 
 
