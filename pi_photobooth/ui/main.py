@@ -20,6 +20,7 @@ log.level = logging.INFO
 class MenuScreen(Screen):
     pass
 cam = mocks.PhotoBoothCamera()
+
 class PhotoboothPreview(Screen):
     image_name = StringProperty("")
     def __init__(self, **kwargs):

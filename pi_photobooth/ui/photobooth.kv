@@ -8,8 +8,6 @@ BoxLayout:
             name: "settings"
         PhotoboothPreview:
             name: "photo"
-
-
 <MenuScreen>:
     GridLayout:
         cols:2
@@ -34,10 +32,19 @@ BoxLayout:
         VisualLog:
 
 <PhotoboothPreview>:
-    cols:1
-    rows:1
-    Image:
-        source: root.image_name
+    GridLayout:
+        cols:2
+        rows:1
+        Image:
+            source: root.image_name
+        Button:
+            id: close_button
+            text: "Cancel"
+            on_press: 
+                root.manager.transition.direction = 'down'
+                root.manager.current = 'menu'
+
+
 
 <VisualLog>:
     cols:1
