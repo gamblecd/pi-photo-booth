@@ -1,0 +1,45 @@
+[
+    {
+        "type": "title",
+        "title": "Photo Booth Settings"
+    },
+    {
+        "type": "numeric",
+        "title": "Countdown Time",
+        "desc": "How long to wait before taking the picture",
+        "section": "Settings",
+        "key": "preview_seconds"
+    },
+    {
+        "type": "numeric",
+        "title": "Review Time",
+        "desc": "How long to display the last picture",
+        "section": "Settings",
+        "key": "review_seconds"
+    },
+    {
+        "type": "numeric",
+        "title": "Frame Count",
+        "desc": "How many pictures to take per session",
+        "section": "Settings",
+        "key": "frame_count"
+    },
+        {
+        "type": "title",
+        "title": "Social Media Settings"
+    },{
+        "type": "string",
+        "title": "Event Name",
+        "desc": "The facebook event to upload the pictures to",
+        "section": "Social",
+        "key": "event_name"
+    },
+    {
+        "type": "string",
+        "title": "Facebook Access",
+        "desc": "Facebook access is provided to the booth throught this key.",
+        "section": "Social",
+        "key": "facebook_account"
+    }
+
+]

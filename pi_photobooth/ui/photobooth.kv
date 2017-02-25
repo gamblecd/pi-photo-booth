@@ -1,0 +1,52 @@
+#:kivy 1.9.1
+
+BoxLayout:
+    ScreenManager:
+        MenuScreen:
+            name: "menu"
+        SettingsScreen:
+            name: "settings"
+        PhotoboothPreview:
+            name: "photo"
+
+
+<MenuScreen>:
+    GridLayout:
+        cols:2
+        rows:2
+        Button:
+            id: exit_button
+            text: "Exit"
+            on_press:app.stop()
+
+        Button:
+            id: settings_button
+            text: "Settings"
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'settings'
+        Button:
+            id: settings_button
+            text: "Settings"
+            on_press:
+                root.manager.transition.direction = 'up'
+                root.manager.current = 'photo'
+        VisualLog:
+
+<PhotoboothPreview>:
+    cols:1
+    rows:1
+    Image:
+        source: root.image_name
+
+<VisualLog>:
+    cols:1
+    rows:1
+    size_hint: (1, 1)
+    ScrollView:
+        Label:
+            font_size: 12
+            text_size: self.width, None
+            size_hint_y: None
+            height: self.texture_size[1]
+            text: root.output

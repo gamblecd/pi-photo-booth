@@ -1,80 +1,41 @@
-import models
-import tests.mocks
 import pygame
-import gphoto2 as gp
 import preview as pv
 from outputs import OutputScreen, Surfaces
-from inputs import Button
 from enum import Enum
 import os
 import time
+import _thread
 import threading
 from background import actions
 import random
 import sys, select
 
-import Queue
+from queue import Queue
+from tests import mocks
 
-ONLINE = True
-MOCK = False
+ONLINE = False
+MOCK = True
+GPIO = False
 
-class ThreadEvents(Enum):
-    SHUTDOWN = "shutdown"
-    SHOOTING = "photoshoot"
+if GPIO:
+    from inputs import Button
 
-class mockImage():
+if not MOCK:
+    import models
 
-    def __init__(self, filename):
-        self.filename=filename
-
-    def get_data_and_size(self):
-        f = open(self.filename,'rb');
-        return f.read()
-
-class Compliments:
-    def __init__(self):
-        self.compliments = ["Your smile is contagious!",
-                            "I like your style!",
-                            "On a scale from 1 to 10, you're an 11",
-                            "Beautiful!",
-                            "Did you say cheese?",
-                            "That color is perfect on you",
-                            "Your hair looks stunning",
-                            "You have the best ideas!",
-                            "You're more fun than bubble wrap!",
-                            "Gorgeous!",
-                            "Look at these peeps!",
-                            "Rockin' it!",
-                            "Merry Christmas!",
-                            "Hello, good looking!",
-                            "Eh, try again on the next one?",
-                            "You get an A+!",
-                            "Do that again!",
-                            "Oh, I can keep going",
-                            "Well played.",
-                            "You look so perfect."]
-
-    def get(self):
-        return random.choice(self.compliments)
+class PhotoBoothController:
+    pass
 
 class PhotoBooth:
-    LIVE_PREVIEW_SECONDS = 10
-    REVIEW_SECONDS = 4
-    FRAME_COUNT = 4
-    EVENT_NAME = "Christmas Party"
 
     def __initActions(self):
         print("loading Actions")
         if ONLINE:
             self.actions = actions.Actions()
+        else:
+            self.actions = mocks.Actions()
         self.processes = []
         print("loading: Actions -- Complete")
-
-    def __initScreen(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode([1920, 1200], pygame.FULLSCREEN)
-        pygame.display.update()
-        self.outputScreen = OutputScreen(self.screen)
 
     def __initPreviewer(self):
         print("loading Previewer")
@@ -82,61 +43,35 @@ class PhotoBooth:
         print("loading: Previewer -- Complete")
 
     def __initCamera(self):
-        print("loading: Camera")
-        if MOCK:
-            self.context = gp.Context()
-            self._camera = models.PhotoBoothCamera(self.context)
-        else:
-            self._camera = mocks.PhotoBoothCamera()
-        self._camera.init()
-        print("loading: Camera -- Complete")
-
-    def __loadMessageAsync(self, load_event):
-        x = 0
-        while not load_event.is_set():
-            self.outputScreen.drawText("Loading" + ("." * x), erase=True)
-            x += 1
-        time.sleep(.1)
-        self.outputScreen.drawText("Done!", erase=True)
-        time.sleep(.25)
-
-    def __loadMessage(self, load_event):
-        loadMessageThread = threading.Thread(target=self.__loadMessageAsync, args=[load_event])
-        loadMessageThread.start()
-        return loadMessageThread
+        print("loading: Camera -- Mock -- Complete")
 
     @property
     def camera(self):
-        if not self._camera.initiated:
-            # Offline Camera
+        if MOCK:
             return {}
         return self._camera
 
-    def __init__(self):
+    def __init__(self, screen_widget = None):
+        self.screen_widget = screen_widget
         self.init_complete = False
         pass
 
     def init(self):
-        self.__initScreen()
         load_event = threading.Event()
-        messageThread = self.__loadMessage(load_event)
         try:
             self.acting = False
-            self._button = Button()
+            if GPIO:
+                self._button = Button()
             self.__initActions()
             self.__initPreviewer()
             self.__initCamera()
-            self.compliments = Compliments()
             time.sleep(.1)
             self.init_complete = True
         except Exception as e:
             load_event.set()
-            messageThread.join()
             print(e)
-            self.outputScreen.drawText("Load Failure: {}".format(e.message), erase=True)
             self.init_complete = False
         load_event.set()
-        messageThread.join()
 
     def __del__(self):
         if self.processes:
@@ -151,7 +86,7 @@ class PhotoBooth:
         cam.focus()
         cam.capture()
 
-    def save(self, file_data, folderName = EVENT_NAME):
+    def save(self, file_data, folderName = "TEST"):
         cam = self.camera
         img = cam.get_image(file_data)
         imglocation = "{0}/{1}".format(folderName, file_data.name)
@@ -179,38 +114,25 @@ class PhotoBooth:
                     print("Ignored input, button")
         return callback
 
-    def keyboard_listener(self, queue, halt_event):
-        while not halt_event.is_set():
-            sys.stdin.flush()
-            print("Waiting For Input")
-            print("Press Enter, or Any Button to quit exit for quit.\n")
-            # Slower spin loop on keyboard input
-            loop, text = self.__wait_for_input(10)
-            while loop and not halt_event.is_set():
-                loop, text = self.__wait_for_input(10)
-            if not queue.full():
-                try:
-
-                    if not text is None and len(text) > 0:
-                        queue.put(ThreadEvents.SHUTDOWN)
-                    else:
-                        queue.put(ThreadEvents.SHOOTING)
-                except Queue.Full:
-                    print("Ignored input, keyboard")
-            else:
-                print("Ignored input, keyboard")
-
     def __wait_for_input(self, timeout=5):
-        i, o, e = select.select([sys.stdin],[],[], timeout)
-        if (i):
-            return False, sys.stdin.readline().strip()
+        timer = threading.Timer(timeout, _thread.interrupt_main)
+        astring = None
+        try:
+            timer.start()
+            astring = input("")
+        except KeyboardInterrupt:
+            pass
+        timer.cancel()
+        if (astring):
+            return False, astring
         else:
             return True, None
 
     def __show_main_screen(self):
         cam = self.camera
         self._print("Press Button to begin taking pictures", erase=True)
-        battery_level = cam.get_config().get("batterylevel").value()
+        # TODO: undo this
+        battery_level = 50;
         if battery_level < 5:
             self.outputScreen.drawText("REPLACE BATTERY NOW!",
                                      location=Surfaces.UP_LEFT)
@@ -244,11 +166,12 @@ class PhotoBooth:
             time.sleep(2)
             return
         print("Display Instruction Screen")
-        queue = Queue.Queue(maxsize=1)
+        queue = Queue(maxsize=1)
 
         halt_event = threading.Event()
 
-        self._button.listen(self.buttonListener(queue, halt_event))
+        if GPIO:
+            self._button.listen(self.buttonListener(queue, halt_event))
 
         keyboard_thread = threading.Thread(target=self.keyboard_listener, args=[queue, halt_event])
         keyboard_thread.start()
@@ -256,7 +179,7 @@ class PhotoBooth:
 
         self.__start_shoot_set(queue, halt_event)
 
-    def photo_shoot(self, count=FRAME_COUNT):
+    def photo_shoot(self, count=4):
         #cam = models.PhotoBoothCamera()
         cam = self.camera
         try:
@@ -289,33 +212,33 @@ class PhotoBooth:
         out_size = out_screen.get_rect().size
         out_screen.blit(font_surface, ((out_size[0]-font_size[0]) / 2, (out_size[1]-font_size[1]) / 2))
 
-    # def previewAndSnap(self):
-    #     cam = self.camera
-    #     #Live Preview
-    #     #self._print("Live Preview")
-    #     generator = cam.generate_preview()
-    #     self.previewer.preview(generator, PhotoBooth.LIVE_PREVIEW_SECONDS)
+    def previewAndSnap(self):
+        cam = self.camera
+        #Live Preview
+        #self._print("Live Preview")
+        generator = cam.generate_preview()
+        self.previewer.preview(generator, 10)
 
-    #     #Capture
-    #     self.outputScreen.drawText("Capturing, Hold Very Still!")
-    #     cam.focus()
+        #Capture
+        self.outputScreen.drawText("Capturing, Hold Very Still!")
+        cam.focus()
 
-    #     file_data = cam.capture()
+        file_data = cam.capture()
 
-    #     #Save
-    #     #self._print("Saving Image")
-    #     local_file = self.save(file_data)
-    #     #Review
+        #Save
+        #self._print("Saving Image")
+        local_file = self.save(file_data)
+        #Review
 
-    #     #self._print("Review")
-    #     self.previewer.review(local_file)
-    #     self._addCompliment()
-    #     self.previewer.preview(generator, PhotoBooth.REVIEW_SECONDS,  self.outputScreen.get_screen(Surfaces.DOWN_RIGHT))
+        #self._print("Review")
+        self.previewer.review(local_file)
+        self._addCompliment()
+        self.previewer.preview(generator, 4,  self.outputScreen.get_screen(Surfaces.DOWN_RIGHT))
 
-    #     self.outputScreen.clear()
-    #     #self._print("DONE")
+        self.outputScreen.clear()
+        #self._print("DONE")
 
-    #     return local_file
+        return local_file
 
     def performActions(self, images):
         process_thread = threading.Thread(target=self.actions.combine_and_upload_to_event, args=[images, PhotoBooth.EVENT_NAME])
@@ -323,7 +246,7 @@ class PhotoBooth:
         self.processes.append(process_thread)
 
 
-    def _boothAction(self, count=FRAME_COUNT):
+    def _boothAction(self, count=4):
             #cam = models.PhotoBoothCamera()
         #cam = self.camera
         #self.__updateFocus()
@@ -343,7 +266,7 @@ class PhotoBooth:
 
         pass
 
-    def previewAndSnap(self):
+    def _previewAndSnap(self):
         #cam = self.camera
         #Live Preview
         def frame_gen():
@@ -380,10 +303,9 @@ class PhotoBooth:
 
         return "pi_photobooth/tests/imgs/test.jpg"
 
+BtnPin = 12
 
 if __name__ == "__main__":
     booth = PhotoBooth()
     booth.init()
     booth.run()
-    #b = Button()
-    #b.loop()

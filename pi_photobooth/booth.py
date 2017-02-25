@@ -1,22 +1,26 @@
-import models
 import pygame
-import gphoto2 as gp
 import preview as pv
 from outputs import OutputScreen, Surfaces
-from inputs import Button
 from enum import Enum
 import os
 import time
+import _thread
 import threading
 from background import actions
 import random
 import sys, select
 
-import Queue
+from queue import Queue
 
+ONLINE = False
+MOCK = True
+GPIO = False
 
-ONLINE = True
-MOCK = False
+if GPIO:
+    from inputs import Button
+
+if not MOCK:
+    import models
 
 class ThreadEvents(Enum):
     SHUTDOWN = "shutdown"
@@ -83,9 +87,9 @@ class PhotoBooth:
 
     def __initCamera(self):
         print("loading: Camera")
-        self.context = gp.Context()
-        self._camera = models.PhotoBoothCamera(self.context)
         if not MOCK:
+            self.context = models.PhotoBoothContext.getContext()
+            self._camera = models.PhotoBoothCamera(self.context)
             self._camera.init()
             print("loading: Camera -- Complete")
         else:
@@ -110,8 +114,7 @@ class PhotoBooth:
 
     @property
     def camera(self):
-        if not self._camera.initiated:
-            # Offline Camera
+        if MOCK:
             return {}
         return self._camera
 
@@ -125,7 +128,8 @@ class PhotoBooth:
         messageThread = self.__loadMessage(load_event)
         try:
             self.acting = False
-            self._button = Button()
+            if GPIO:
+                self._button = Button()
             self.__initActions()
             self.__initPreviewer()
             self.__initCamera()
@@ -204,16 +208,24 @@ class PhotoBooth:
                 print("Ignored input, keyboard")
 
     def __wait_for_input(self, timeout=5):
-        i, o, e = select.select([sys.stdin],[],[], timeout)
-        if (i):
-            return False, sys.stdin.readline().strip()
+        timer = threading.Timer(timeout, _thread.interrupt_main)
+        astring = None
+        try:
+            timer.start()
+            astring = raw_input(prompt)
+        except KeyboardInterrupt:
+            pass
+        timer.cancel()
+        if (astring):
+            return False, astring
         else:
             return True, None
 
     def __show_main_screen(self):
         cam = self.camera
         self._print("Press Button to begin taking pictures", erase=True)
-        battery_level = cam.get_config().get("batterylevel").value()
+        # TODO: undo this
+        battery_level = 50;
         if battery_level < 5:
             self.outputScreen.drawText("REPLACE BATTERY NOW!",
                                      location=Surfaces.UP_LEFT)
@@ -247,11 +259,12 @@ class PhotoBooth:
             time.sleep(2)
             return
         print("Display Instruction Screen")
-        queue = Queue.Queue(maxsize=1)
+        queue = Queue(maxsize=1)
 
         halt_event = threading.Event()
 
-        self._button.listen(self.buttonListener(queue, halt_event))
+        if GPIO:
+            self._button.listen(self.buttonListener(queue, halt_event))
 
         keyboard_thread = threading.Thread(target=self.keyboard_listener, args=[queue, halt_event])
         keyboard_thread.start()

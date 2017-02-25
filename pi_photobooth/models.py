@@ -2,6 +2,9 @@
 """
 import gphoto2 as gp
 
+class PhotoBoothContext:
+    def getContext():
+        return gp.Context();
 
 class PhotoBoothCamera:
 

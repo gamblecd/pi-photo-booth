@@ -1,6 +1,5 @@
-import social
-from social.facebook_uploader import FacebookUploader
-from image import ImageProcessor, Directions
+from .social.facebook_uploader import FacebookUploader
+from .image import ImageProcessor, Directions
 class Actions:
 
     def __init__(self, uploader=FacebookUploader(), image_proc=ImageProcessor()):
