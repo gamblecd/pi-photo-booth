@@ -22,15 +22,6 @@ class ThreadEvents(Enum):
     SHUTDOWN = "shutdown"
     SHOOTING = "photoshoot"
 
-class mockImage():
-
-    def __init__(self, filename):
-        self.filename=filename
-
-    def get_data_and_size(self):
-        f = open(self.filename,'rb');
-        return f.read()
-
 class Compliments:
     def __init__(self):
         self.compliments = ["Your smile is contagious!",

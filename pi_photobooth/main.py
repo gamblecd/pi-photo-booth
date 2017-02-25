@@ -1,18 +1,19 @@
-from kivy.config import ConfigParser
-from kivy.uix.settings import Settings
-from kivy.uix.widget import Widget
-from kivy.uix.gridlayout import GridLayout
-from kivy.properties import StringProperty
-from kivy.app import App
-from kivy.uix.screenmanager import Screen
-from kivy.core.image import Image as CoreImage
-from kivy.uix.image import Image
-from kivy.clock import Clock
-
-import mocks
-
 import logging
 import re
+
+from kivy.app import App
+from kivy.clock import Clock
+from kivy.config import ConfigParser
+from kivy.core.image import Image as CoreImage
+from kivy.properties import StringProperty
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.image import Image
+from kivy.uix.screenmanager import Screen
+from kivy.uix.settings import Settings
+from kivy.uix.widget import Widget
+
+import tests.mocks as mocks
+import booth_controller
 
 log = logging.getLogger("photobooth")
 log.level = logging.INFO
@@ -31,7 +32,8 @@ class PhotoboothPreview(Screen):
         self.image_name = image_name
 
     def update_image(self, instance):
-        self.set_image_name(cam.generate_preview())
+        img = cam.generate_preview()
+        self.set_image_name(img.filename)
 
 class VisualLog(GridLayout, logging.Handler):
     output = StringProperty('')
@@ -70,9 +72,10 @@ class SettingsScreen(Screen):
 class PhotoboothApp(App):
 
     def on_start(self):
+        self.controller = booth_controller.PhotoBooth()
+        self.controller.init()
         #TODO do the controller init here.
         pass
 
 if __name__ == '__main__':
     PhotoboothApp().run()
-    

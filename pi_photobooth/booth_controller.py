@@ -23,9 +23,6 @@ if GPIO:
 if not MOCK:
     import models
 
-class PhotoBoothController:
-    pass
-
 class PhotoBooth:
 
     def __initActions(self):

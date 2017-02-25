@@ -116,14 +116,6 @@ class Previewer:
         pygame.display.update()
 
 
-class mockImage():
-
-    def __init__(self, filename):
-        self.filename=filename
-
-    def get_data_and_size(self):
-        f = open(self.filename,'rb');
-        return f.read()
 
 
 if __name__ == "__main__":

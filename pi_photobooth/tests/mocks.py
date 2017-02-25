@@ -6,6 +6,17 @@ class Actions:
         print("Combining and uploading imgs: %s" % args)
         pass
 
+
+class mockImage():
+
+    def __init__(self, filename):
+        self.filename=filename
+
+    def get_data_and_size(self):
+        f = open(self.filename,'rb');
+        return f.read()
+
+
 class PhotoBoothContext:
     def getContext(self):
         return {};
@@ -60,8 +71,8 @@ class PhotoBoothCamera:
         return next(self.generator)
 
     def frame_gen(self):
-        m1 = "pi_photobooth/tests/imgs/test.jpg"
-        m2 = "pi_photobooth/tests/imgs/test1.png"
+        m1 = mockImage("pi_photobooth/tests/imgs/test.jpg")
+        m2 = mockImage("pi_photobooth/tests/imgs/test1.png")
         while True:
             if int(time.time()) % 2 == 0:
                 yield m1
