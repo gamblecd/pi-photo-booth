@@ -7,25 +7,6 @@ from PIL import Image
 
 import time
 
-def count_helper(seconds, init_val, countFn):
-    start = int(time.time())
-    now = int(time.time())
-    val = init_val;
-    count = 0;
-    yield val
-    while not count == seconds:
-        if not (now - start) == count:
-            val = countFn(now, start)
-            count +=1
-        yield val
-        now = int(time.time())
-
-def count_up(seconds):
-    return count_helper(seconds, 0, lambda x, y: (x-y))
-
-def count_down(seconds):
-    return count_helper(seconds, seconds, lambda x, y: seconds - (x-y))
-
 '''
 Handles Previews for a camera, shows a preview and a review after the image
 was taken.

@@ -25,8 +25,9 @@ BoxLayout:
                 root.manager.current = 'settings'
         Button:
             id: settings_button
-            text: "Settings"
+            text: "Shoot me!"
             on_press:
+                #On click of this button, we should start taking pictures
                 root.manager.transition.direction = 'up'
                 root.manager.current = 'photo'
         VisualLog:
@@ -34,7 +35,7 @@ BoxLayout:
 <PhotoboothPreview>:
     GridLayout:
         cols:2
-        rows:1
+        rows:2
         Image:
             source: root.image_name
         Button:
@@ -43,6 +44,12 @@ BoxLayout:
             on_press: 
                 root.manager.transition.direction = 'down'
                 root.manager.current = 'menu'
+        Countdown:
+            starting_number: 5
+
+<Countdown>:
+    Label:
+        text: str(root.current)
 
 
 
