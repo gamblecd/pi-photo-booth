@@ -93,7 +93,7 @@ class PhotoboothReview(BoxLayout):
     def set_image(self, image_data):
         self.image = image_data
 
-class Countdown(Widget):
+class Countdown(BoxLayout):
     starting_number = NumericProperty(0)
     current = NumericProperty(0)
     def __init__(self, starting_number=0, **kwargs):
@@ -119,5 +119,4 @@ class Countdown(Widget):
         if self.current <= 0:
             if self.callback:
                 self.callback()
-                self.callback = None
             return False
