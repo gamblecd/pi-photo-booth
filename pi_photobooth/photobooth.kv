@@ -6,7 +6,7 @@ BoxLayout:
             name: "menu"
         SettingsScreen:
             name: "settings"
-        PhotoboothPreview:
+        PhotoboothScreen:
             name: "photo"
 <MenuScreen>:
     GridLayout:
@@ -33,25 +33,33 @@ BoxLayout:
         VisualLog:
 
 <PhotoboothPreview>:
+    MemoryImage:
+        memory_data: root.image_name
+
+<PhotoboothScreen>:
     GridLayout:
         cols:2
         rows:2
-        Image:
-            source: root.image_name
+        PhotoboothPreview:
+            id: preview
         Button:
             id: close_button
             text: "Cancel"
             on_press: 
                 root.manager.transition.direction = 'down'
                 root.manager.current = 'menu'
+        Button:
+            id: shoot_button
+            text: "Take My Picture"
+            on_press: 
+                root.run_preview(4)
         Countdown:
+            id: countdown
             starting_number: 5
 
 <Countdown>:
     Label:
         text: str(root.current)
-
-
 
 <VisualLog>:
     cols:1

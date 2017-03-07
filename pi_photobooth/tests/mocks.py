@@ -1,5 +1,6 @@
 import time
-
+from shutil import copy
+import os
 class Actions:
 
     def combine_and_upload_to_event(self, *args):
@@ -11,11 +12,15 @@ class mockImage():
 
     def __init__(self, filename):
         self.filename=filename
+        self.name=filename
 
     def get_data_and_size(self):
         f = open(self.filename,'rb');
         return f.read()
 
+    def save(self, path):
+        copy(os.path.abspath(self.filename), os.path.abspath(path))
+        pass
 
 class PhotoBoothContext:
     def getContext(self):
@@ -39,7 +44,7 @@ class PhotoBoothCamera:
 
     def _set_config_value(self, name, value):
         config = self.get_config()
-        print("Set %s to %s" % name, value)
+        print("Set %s to %s" % (name, value))
 
     def _set_viewfinder(self, value):
         self._set_config_value("viewfinder", value)
@@ -68,7 +73,8 @@ class PhotoBoothCamera:
     def generate_preview(self):
         if self.generator is None:
             self.generator = self.frame_gen();
-        return next(self.generator)
+        while True:
+            yield next(self.generator)
 
     def frame_gen(self):
         m1 = mockImage("pi_photobooth/tests/imgs/test.jpg")

@@ -34,11 +34,6 @@ class PhotoBooth:
         self.processes = []
         print("loading: Actions -- Complete")
 
-    def __initPreviewer(self):
-        print("loading Previewer")
-        self.previewer = pv.Previewer(self.screen)
-        print("loading: Previewer -- Complete")
-
     def __initCamera(self):
         print("loading: Camera -- Mock -- Complete")
 
@@ -60,7 +55,6 @@ class PhotoBooth:
             if GPIO:
                 self._button = Button()
             self.__initActions()
-            self.__initPreviewer()
             self.__initCamera()
             time.sleep(.1)
             self.init_complete = True
