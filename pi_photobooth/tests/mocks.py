@@ -1,6 +1,23 @@
 import time
 from shutil import copy
 import os
+import random 
+import string
+class FacebookUploader:
+    def get_events(self):
+        return {"data":[{"name": "eventName1", "id":"eventId1"},
+                        {"name": "eventName2", "id":"eventId2"}]}
+
+    def event(self, eventName):
+        events = self.get_events()
+        for event in events.get("data"):
+            if eventName in event.get("name"):
+                return event.get("id")
+        return None
+
+    def upload_to_event(self, imageName, id):
+        return {"post_id":''.join([random.choice(string.ascii_letters + string.digits) for n in range(12)])}
+        
 class Actions:
 
     def combine_and_upload_to_event(self, *args):

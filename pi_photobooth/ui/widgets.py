@@ -1,7 +1,9 @@
 import logging 
 
 from kivy.clock import Clock
+from kivy.config import ConfigParser
 from kivy.core.image import Image as CoreImage
+from kivy.graphics.texture import Texture
 from kivy.uix.widget import Widget
 from kivy.core.image.img_pil import ImageLoaderPIL
 from kivy.uix.image import Image
@@ -9,12 +11,14 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty,NumericProperty, ObjectProperty
 from ui.util import utils
+from ui.util.settings import SettingsBase
 from preview import Previewer
+from background.actions import Actions
 import tests.mocks as mocks
 
-log = logging.getLogger("photobooth")
-log.level = logging.INFO
+import queue
 
+log = logging.getLogger("photobooth")
 
 class MemoryImage(Image):
     """Display an image already loaded in memory."""
@@ -23,9 +27,16 @@ class MemoryImage(Image):
     def __init__(self,**kwargs):
         super(MemoryImage, self).__init__(**kwargs)
 
+    def blackout(self):
+        self.texture = Texture.create(self.size)
+
+
     def on_memory_data(self, *args):
         """Load image from memory."""
         with self.canvas:
+            if not self.memory_data:
+                self.blackout()
+                return
             self.memory_data.seek(0)
             im = CoreImage(self.memory_data, ext='jpg')
             tex = im.texture
@@ -37,11 +48,23 @@ class VisualLog(GridLayout, logging.Handler):
     output = StringProperty('')
     def __init__(self, level=logging.NOTSET, **kwargs):
         super(VisualLog, self).__init__(**kwargs)
+        
         logging.Handler.__init__(self)
         log.addHandler(self)
         self.setFormatter("'%(asctime)s-[%(levelname)s][%(name)s]--%(message)s'")
+        self.config = ConfigParser.get_configparser("photobooth_settings")
+        if not self.config:
+            self.config = ConfigParser("photobooth_settings")
+        self.config.read("pi_photobooth/booth_config.ini")
+        log.setLevel(self.config.get("Global", "visual_log_level"))
 
-        
+        self.config.add_callback(self.settings_updated)
+
+    def settings_updated(self, section, key, value):
+        if section == "Global" and key == "visual_log_level":
+            log_level = value
+            log.setLevel(log_level)
+
     def emit(self, record):
         "using the Clock module for thread safety with kivy's main loop"
         self.output += self.format(record) #"use += to append..."
@@ -51,11 +74,12 @@ class VisualLog(GridLayout, logging.Handler):
 
 class PhotoboothPreview(BoxLayout):
     "Updates by name, possible source of performance gain."
-    image_name = ObjectProperty("")
+    image_data = ObjectProperty("")
     def __init__(self, **kwargs):
         super(PhotoboothPreview, self).__init__(**kwargs)
         self.cam = mocks.PhotoBoothCamera()
         self.previewer = Previewer()
+        self.previewing = None
 
     def preview(self, generator=None):
         log.info("Starting Preview")
@@ -67,22 +91,23 @@ class PhotoboothPreview(BoxLayout):
         
     def review(self, image_name):
         f = open(image_name,'rb');
-        self.image_name =  self.previewer.produce_frame(f.read())
+        self.image_data =  self.previewer.produce_frame(f.read())
 
     def stop_preview(self):
         log.info("Stopping Preview")
         if self.previewing:
             self.previewing.cancel()
+        self.set_image('')
 
-    def set_image_name(self, image_name):
-        self.image_name = image_name
+    def set_image(self, image):
+        self.image_data = image
 
     def update_image(self, instance):
         try:
             img = next(self.image_generator)
-            self.set_image_name(img)
+            self.set_image(img)
         except StopIteration:
-            self.previewing.cancel();
+            self.previewing.cancel()
 
 class PhotoboothReview(BoxLayout):
     "Updates by name, possible source of performance gain."
@@ -93,9 +118,23 @@ class PhotoboothReview(BoxLayout):
     def set_image(self, image_data):
         self.image = image_data
 
+class ActionsQueue(BoxLayout):
+    "Updates by name, possible source of performance gain."
+    def __init__(self, **kwargs):
+        super(ActionsQueue, self).__init__(**kwargs)
+        self.queue = queue.Queue()
+        self.actions = Actions()
+
+    def push(self, action_name, image_arr):
+        "Push a new action to perform onto a queue to process (name, images)"
+        pass
+    def run_action(self, action_name, image_arr):
+        combined_image_name = self.actions.combine(self, image_arr)
+        post_id = self.actions.upload("fb", combined_image_name, {"event_name":"fb_event"})
+        return post_id
 class Countdown(BoxLayout):
     starting_number = NumericProperty(0)
-    current = NumericProperty(0)
+    current = NumericProperty(-1)
     def __init__(self, starting_number=0, **kwargs):
         super(Countdown, self).__init__(**kwargs)
         self.starting_number = starting_number
@@ -108,6 +147,14 @@ class Countdown(BoxLayout):
         self.generator = utils.count_down(seconds)
         self.callback = callback
         self.event = Clock.schedule_interval(self.update_count, 0.2)
+
+    def reset(self):
+        self.current = -1
+
+    def stop_countdown(self):
+        if self.event:
+            self.event.cancel()
+        self.reset()
 
     def set_image_name(self, image_name):
         self.image_name = image_name

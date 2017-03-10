@@ -34,7 +34,7 @@ BoxLayout:
 
 <PhotoboothPreview>:
     MemoryImage:
-        memory_data: root.image_name
+        memory_data: root.image_data
 
 <PhotoboothScreen>:
     GridLayout:
@@ -42,6 +42,10 @@ BoxLayout:
         rows:2
         PhotoboothPreview:
             id: preview
+            Countdown:
+                id: countdown
+                starting_number: 5
+
         Button:
             id: close_button
             text: "Cancel"
@@ -53,13 +57,11 @@ BoxLayout:
             text: "Take My Picture"
             on_press: 
                 root.run_booth()
-        Countdown:
-            id: countdown
-            starting_number: 5
-
+        
 <Countdown>:
     Label:
-        text: str(root.current)
+        id: label
+        text: str(root.current) if root.current >= 0 else ''
 
 <VisualLog>:
     cols:1
