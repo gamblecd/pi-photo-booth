@@ -52,3 +52,4 @@ To begin a Photo Shoot, press Enter, or a button
 * Remove use of pygame, it has issues trying to show text over what should essentially be a video stream,
 * Upload to multiple social sites, Instagram? Twitter?
 * Proper logging to the console, and to the screen
+* Adjust the UI to look cleaner, need to find references for better UI

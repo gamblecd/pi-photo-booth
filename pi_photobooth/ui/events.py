@@ -7,15 +7,18 @@ class PhotoboothEventDispatcher(EventDispatcher):
         self.register_event_type("on_countdown")
         self.register_event_type("on_complete_once")
         self.register_event_type("on_complete_all")
+        self.register_event_type("on_state_end")
         super(PhotoboothEventDispatcher, self).__init__(**kwargs)
 
-    def on_complete_all(self, args):
+    def on_complete_all(self, *args):
         pass
     def on_complete_once(self):
         pass
     def on_capture(self, image_name):
         pass
     def on_countdown(self):
+        pass
+    def on_state_end(self):
         pass
 
     def all_completed(self, images):

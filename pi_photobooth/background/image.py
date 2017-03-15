@@ -39,7 +39,7 @@ class ImageProcessor:
         """
         if not image_paths:
             raise IndexError("image_paths need to have atleast one value")
-        opened_imgs = map(Image.open, image_paths)
+        opened_imgs = list(map(Image.open, image_paths))
         # * unpacks arguments in python so the [(x,y),...] list becomes
         # [x1, x2,...], [y1, y2, ...] here.
         widths, heights = zip(*(img.size for img in opened_imgs))

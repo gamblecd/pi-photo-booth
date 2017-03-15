@@ -119,19 +119,6 @@ class PhotoBooth:
         else:
             return True, None
 
-    def __show_main_screen(self):
-        cam = self.camera
-        self._print("Press Button to begin taking pictures", erase=True)
-        # TODO: undo this
-        battery_level = 50;
-        if battery_level < 5:
-            self.outputScreen.drawText("REPLACE BATTERY NOW!",
-                                     location=Surfaces.UP_LEFT)
-        else:
-            self.outputScreen.drawText("Battery: {}".format(battery_level),
-                                     location=Surfaces.UP_LEFT)
-
-
     def __start_shoot_set(self, queue, halt_event):
         self.__show_main_screen()
         while not halt_event.is_set():
@@ -176,7 +163,7 @@ class PhotoBooth:
         try:
             # Mirror up and to speed things up, less sounds from camera for usability
             cam.mirror_up()
-
+            
             images = [self.previewAndSnap() for _ in range(count)]
 
             cam.mirror_down()

@@ -96,12 +96,13 @@ class PhotoBoothCamera:
     def frame_gen(self):
         m1 = mockImage("pi_photobooth/tests/imgs/test.jpg")
         m2 = mockImage("pi_photobooth/tests/imgs/test1.png")
+        switch = False
         while True:
-            if int(time.time()) % 2 == 0:
+            if switch:
                 yield m1
             else:
                 yield m2
-
+            switch = not switch
     
     def capture_preview(self):
         if self.generator is None:

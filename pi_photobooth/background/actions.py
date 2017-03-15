@@ -6,7 +6,7 @@ from kivy.config import ConfigParser
 from ui.util.settings import SettingsBase
 
 class Actions(SettingsBase):
-    def __init__(self, uploader=None, image_proc=ImageProcessor()):
+    def __init__(self, image_proc=ImageProcessor()):
         self.logger = logging.getLogger("photobooth.actions")
         self.logger.info("Loading Actions")
         super(Actions, self).__init__('pi_photobooth/booth_config.ini')
@@ -50,11 +50,18 @@ class Actions(SettingsBase):
             except Exception as e:
                 self.logger.error(f"Upload failed, message was {e}")
             return ""
+    
     def combine_and_upload_to_event(self, img_arr, event_name):
         if not img_arr:
             return ""
+        imgname = self.combine(img_arr)
+        self.upload("fb", imgname, {"event_name":event_name})
+
+    def _combine_and_upload_to_event(self, img_arr, event_name):
+        if not img_arr:
+            return ""
         self.logger.info("Grabbing Event Id")
-        event_id = self.fb.event(event_name);
+        event_id = self.fb.event(event_name)
 
         print("Processing Image")
         image_name = self.define_name(img_arr)

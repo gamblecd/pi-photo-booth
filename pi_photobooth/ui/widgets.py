@@ -42,8 +42,6 @@ class MemoryImage(Image):
             tex = im.texture
             self.texture = tex
 
-
-
 class VisualLog(GridLayout, logging.Handler):
     output = StringProperty('')
     def __init__(self, level=logging.NOTSET, **kwargs):
@@ -82,19 +80,19 @@ class PhotoboothPreview(BoxLayout):
         self.previewing = None
 
     def preview(self, generator=None):
-        log.info("Starting Preview")
+        log.debug("Starting Preview")
         if not generator:
             log.info("Creating Generator from Camera")
             generator = self.cam.generate_preview()
         self.image_generator = self.previewer.producer(generator)
-        self.previewing = Clock.schedule_interval(self.update_image, 0.3)
+        self.previewing = Clock.schedule_interval(self.update_image, 1 / 30)
         
     def review(self, image_name):
         f = open(image_name,'rb');
         self.image_data =  self.previewer.produce_frame(f.read())
 
     def stop_preview(self):
-        log.info("Stopping Preview")
+        log.debug("Stopping Preview")
         if self.previewing:
             self.previewing.cancel()
         self.set_image('')
@@ -108,15 +106,6 @@ class PhotoboothPreview(BoxLayout):
             self.set_image(img)
         except StopIteration:
             self.previewing.cancel()
-
-class PhotoboothReview(BoxLayout):
-    "Updates by name, possible source of performance gain."
-    image = ObjectProperty("")
-    def __init__(self, **kwargs):
-        super(PhotoboothReview, self).__init__(**kwargs)
-
-    def set_image(self, image_data):
-        self.image = image_data
 
 class ActionsQueue(BoxLayout):
     "Updates by name, possible source of performance gain."
@@ -162,8 +151,12 @@ class Countdown(BoxLayout):
     def update_count(self, instance):
         if self.generator == None:
             return
-        self.current = next(self.generator)
-        if self.current <= 0:
-            if self.callback:
-                self.callback()
+        try:
+            self.current = next(self.generator)
+            if self.current < 0:
+                if self.callback:
+                    self.callback()
+                return False
+        except StopIteration as si:
+            log.error("Received Stop Iteration before time was up")
             return False
