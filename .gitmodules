@@ -1,0 +1,3 @@
+[submodule "KivyMD"]
+	path = KivyMD
+	url = https://gitlab.com/kivymd/KivyMD.git
