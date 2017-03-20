@@ -1,10 +1,9 @@
 from kivy.clock import Clock
 from kivy.config import ConfigParser
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty,ListProperty
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen
 from kivy.uix.settings import Settings
-
 from .events import PhotoboothEventDispatcher
 from background.actions import Actions
 import tests.mocks as mocks

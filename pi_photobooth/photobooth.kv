@@ -1,4 +1,6 @@
 #:kivy 1.9.1
+#:import win kivy.core.window
+
 #:import MDRaisedButton kivymd.button.MDRaisedButton
 #:import MDLabel kivymd.label.MDLabel
 
@@ -8,6 +10,8 @@
 #:import NavigationDrawerToolbar kivymd.navigationdrawer.NavigationDrawerToolbar
 #:import NavigationDrawerSubheader kivymd.navigationdrawer.NavigationDrawerSubheader
 
+#:import SideBarMenu kivygallery.gallery.sidebarmenu.SideBarMenu
+#:import SideBarLabel kivygallery.gallery.sidebarlabel.SideBarLabel
 
 NavigationLayout:
     id: nav_layout
@@ -37,6 +41,11 @@ NavigationLayout:
                 app.root.ids.scr_mngr.current = 'photo'
         NavigationDrawerIconButton:
             icon: 'checkbox-blank-circle'
+            text: "Gallery"
+            on_release: 
+                app.root.ids.scr_mngr.current = 'gallery'
+        NavigationDrawerIconButton:
+            icon: 'checkbox-blank-circle'
             text: "Exit"
             on_release: app.stop()
     BoxLayout:
@@ -56,6 +65,18 @@ NavigationLayout:
                 name: "settings"
             PhotoboothScreen:
                 name: "photo"
+            Screen:
+                name: 'gallery'
+                ScrollView:
+                    do_scroll_x: False
+                    GalleryWidget:
+                        id: gallery
+                        ScreenMgr:
+                            media: self.parent.media
+                            
+                
+<GalleryWidget>
+    
 <Settings>:
     on_close:
         app.root.ids.nav_drawer.active_item._active = False
@@ -143,3 +164,85 @@ NavigationLayout:
             size_hint_y: None
             height: self.texture_size[1]
             text: root.output
+
+# Copied from hackerbrot/kivy-gallery
+
+<SideBarScreen>:
+    menu: menu
+    lbl: lbl
+    content: content
+    FloatLayout:
+        id: content
+    FloatLayout:
+        SideBarMenu:
+            id: menu
+            height: root.top - lbl.y
+            y: lbl.top
+        SideBarLabel:
+            id: lbl
+            top: root.top
+
+<SideBarMenu>:
+    orientation: 'horizontal'
+    size_hint_y: None
+
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<SideBarLabel>:
+    size_hint_y: None
+    height: win.Window.height * 0.04
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<SideBarButton>:
+    background_down: self.background_normal
+    
+<Overview>:
+    content: content
+    do_scroll_y: False
+    size_hint: None, None
+    size: win.Window.size
+    GridLayout:
+        id: content
+        rows: 1
+        spacing: win.Window.width * 0.01
+        size_hint_x: None
+        width: self.minimum_width
+
+<OverviewItem>:
+    size_hint_x: None
+    width: win.Window.width * 0.25
+    background_down: self.background_normal
+    text_size: None, self.height * 0.8
+    valign: 'bottom'
+
+<Stage>:
+    content: content
+    anchor_y: 'bottom'
+    Carousel:
+        id: content
+
+<ExplorerItem>:
+    image: image
+    on_size: self.center = win.Window.center
+    size: image.size
+    size_hint: None, None
+
+    Image:
+        id: image
+        size: 400, 400 / self.image_ratio
+        canvas.before:
+            Color:
+                rgba: 0.1, 0.1, 0.1, 1
+            Rectangle:
+                pos: (-2, -2)
+                size: (root.width + 4, root.height + 4)

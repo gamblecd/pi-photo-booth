@@ -1,4 +1,5 @@
 import logging 
+from os import path
 
 from kivy.clock import Clock
 from kivy.config import ConfigParser
@@ -9,7 +10,11 @@ from kivy.core.image.img_pil import ImageLoaderPIL
 from kivy.uix.image import Image
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.properties import StringProperty,NumericProperty, ObjectProperty
+from kivy.properties import StringProperty,ListProperty,NumericProperty, ObjectProperty
+from kivymd.grid import SmartTile
+from kivygallery.gallery.screens import ScreenMgr
+from kivygallery.gallery.mediafactory import loadMedia, loadPictures
+
 from ui.util import utils
 from ui.util.settings import SettingsBase
 from preview import Previewer
@@ -19,6 +24,34 @@ import tests.mocks as mocks
 import queue
 
 log = logging.getLogger("photobooth")
+
+class GalleryWidget(BoxLayout, SettingsBase):
+    image_names = ListProperty([])
+    focus = StringProperty('')
+    media = ListProperty()
+    def __init__(self, **kwargs):
+        super(GalleryWidget, self).__init__(**kwargs)
+        SettingsBase.__init__(self, "pi_photobooth/booth_config.ini")
+        folder_name = self.config.get("Settings", "folder_name")     
+        #parse folder tree
+        mediaDir = path.realpath(folder_name)
+        
+        self.media = loadPictures(mediaDir)
+
+    def on_image_names(self, instance, image_names):
+        #Clear existing grids and reload for now, we can keep them loaded later
+        self.clear_widgets()
+        for name in self.image_names:
+            smart_tile = SmartTile(allow_stretch=False, mipmap=True, source=name)
+            smart_tile.bind(on_touch_up=self.select)
+            self.add_widget(SmartTile(allow_stretch=False, mipmap=True, source=name))
+        pass
+    def select(self, instance, value):
+        pass
+    def fullscreen(self):
+        pass
+    def exit_fullscreen(self):
+        pass
 
 class MemoryImage(Image):
     """Display an image already loaded in memory."""

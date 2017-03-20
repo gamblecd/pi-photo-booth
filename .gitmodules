@@ -1,3 +1,6 @@
 [submodule "KivyMD"]
 	path = KivyMD
 	url = https://gitlab.com/kivymd/KivyMD.git
+[submodule "kivy-gallery"]
+	path = pi_photobooth/kivygallery
+	url = https://github.com/hackebrot/kivy-gallery.git
