@@ -8,6 +8,9 @@ Currently uses pygame to display
 
 # Prerequisites
 
+
+### KivyMD
+
 ### Gphoto2:
 
 > `sudo apt-get install gphoto2`
@@ -25,6 +28,13 @@ virtualenv pi-photo-booth
 cd pi-photo-booth
 source bin/activate
 pip install -r requirements.txt
+#Install KivyMD
+git submodule update --init KivyMD
+cd KivyMD
+sudo python ./setup.py install
+
+cd ../pi_photobooth
+git submodule up
 ```
 
 # Run Tests
