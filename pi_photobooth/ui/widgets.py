@@ -34,9 +34,10 @@ class GalleryWidget(BoxLayout, SettingsBase):
         SettingsBase.__init__(self, "pi_photobooth/booth_config.ini")
         folder_name = self.config.get("Settings", "folder_name")     
         #parse folder tree
-        mediaDir = path.realpath(folder_name)
-        
-        self.media = loadPictures(mediaDir)
+        mediaDir = path.realpath(".")
+        if path.exists(folder_name):
+            mediaDir = path.realpath(folder_name)
+            self.media = loadPictures(mediaDir)
 
     def on_image_names(self, instance, image_names):
         #Clear existing grids and reload for now, we can keep them loaded later
