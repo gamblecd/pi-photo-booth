@@ -69,7 +69,6 @@ class MemoryImage(Image):
     def blackout(self):
         self.texture = Texture.create(self.size)
 
-
     def on_memory_data(self, *args):
         """Load image from memory."""
         with self.canvas:
@@ -77,7 +76,7 @@ class MemoryImage(Image):
                 self.blackout()
                 return
             self.memory_data.seek(0)
-            im = CoreImage(self.memory_data, ext='jpg')
+            im = CoreImage(self.memory_data, ext='jpg', anim_delay=.01)
             tex = im.texture
             self.texture = tex
 
