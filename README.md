@@ -34,7 +34,7 @@ cd KivyMD
 sudo python ./setup.py install
 
 cd ../pi_photobooth
-git submodule up
+git submodule update --init kivygallery
 ```
 
 # Run Tests
