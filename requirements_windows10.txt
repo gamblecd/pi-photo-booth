@@ -23,4 +23,6 @@ pyparsing==2.1.10
 pypiwin32==220
 requests==2.13.0
 six==1.10.0
+snakeviz==0.4.1
+tornado==4.5.1
 wrapt==1.10.8

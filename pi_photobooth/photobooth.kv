@@ -67,10 +67,12 @@ NavigationLayout:
                 name: "photo"
             Screen:
                 name: 'gallery'
+                on_pre_enter: gallery_widget.load()
+                on_leave: gallery_widget.unload()
                 ScrollView:
                     do_scroll_x: False
                     GalleryWidget:
-                        id: gallery
+                        id: gallery_widget
                         ScreenMgr:
                             media: self.parent.media
                             
