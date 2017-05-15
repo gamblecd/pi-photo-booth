@@ -6,7 +6,7 @@ docutils==0.13.1
 Facebook==0.0
 facebook-sdk==2.0.0
 isort==4.2.5
-Kivy==1.9.1
+Kivy==1.10.0
 Kivy-Garden==0.1.4
 lazy-object-proxy==1.2.2
 mccabe==0.6.1
