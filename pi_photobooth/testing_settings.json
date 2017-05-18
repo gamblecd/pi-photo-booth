@@ -1,0 +1,18 @@
+[
+   {
+        "type": "bool",
+        "title": "Mock Social Media and Hardware",
+        "desc": "Are we testing or actually running for realsies",
+        "section": "Global",
+        "key": "testing"
+    },
+    {
+        "type": "options",
+        "options": ["CRITICAL",  "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"],
+        "title": "Visual Log Level",
+        "desc": "The level of logs to display in the visual log widge",
+        "section": "Global",
+        "key": "visual_log_level"
+    }
+
+]

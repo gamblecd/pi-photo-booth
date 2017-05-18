@@ -1,0 +1,15 @@
+[{
+        "type": "string",
+        "title": "Event Name",
+        "desc": "The facebook event to upload the pictures to",
+        "section": "Social",
+        "key": "event_name"
+    },
+    {
+        "type": "string",
+        "title": "Facebook Access",
+        "desc": "Facebook access is provided to the booth throught this key.",
+        "section": "Social",
+        "key": "facebook_account"
+    }
+]

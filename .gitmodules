@@ -1,0 +1,6 @@
+[submodule "KivyMD"]
+	path = KivyMD
+	url = https://gitlab.com/kivymd/KivyMD.git
+[submodule "pi_photobooth/kivygallery"]
+	path = pi_photobooth/kivygallery
+	url = git@github.com:gamblecd/kivy-gallery.git

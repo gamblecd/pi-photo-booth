@@ -1,0 +1,30 @@
+[
+     {
+        "type": "numeric",
+        "title": "Countdown Time",
+        "desc": "How long to wait before taking the picture",
+        "section": "Settings",
+        "key": "preview_seconds"
+    },
+    {
+        "type": "numeric",
+        "title": "Review Time",
+        "desc": "How long to display the last picture",
+        "section": "Settings",
+        "key": "review_seconds"
+    },
+    {
+        "type": "numeric",
+        "title": "Frame Count",
+        "desc": "How many pictures to take per session",
+        "section": "Settings",
+        "key": "frame_count"
+    },
+    {
+        "type": "string",
+        "title": "Folder Name",
+        "desc": "The name of the folder to store all the images.",
+        "section": "Settings",
+        "key": "folder_name"
+    }
+]

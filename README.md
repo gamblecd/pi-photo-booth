@@ -8,6 +8,9 @@ Currently uses pygame to display
 
 # Prerequisites
 
+
+### KivyMD
+
 ### Gphoto2:
 
 > `sudo apt-get install gphoto2`
@@ -25,6 +28,13 @@ virtualenv pi-photo-booth
 cd pi-photo-booth
 source bin/activate
 pip install -r requirements.txt
+#Install KivyMD
+git submodule update --init KivyMD
+cd KivyMD
+sudo python ./setup.py install
+
+cd ../pi_photobooth
+git submodule update --init kivygallery
 ```
 
 # Run Tests
@@ -52,3 +62,4 @@ To begin a Photo Shoot, press Enter, or a button
 * Remove use of pygame, it has issues trying to show text over what should essentially be a video stream,
 * Upload to multiple social sites, Instagram? Twitter?
 * Proper logging to the console, and to the screen
+* Adjust the UI to look cleaner, need to find references for better UI

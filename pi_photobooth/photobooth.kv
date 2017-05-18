@@ -1,0 +1,271 @@
+#:kivy 1.10.0
+#:import win kivy.core.window
+
+#:import MDRaisedButton kivymd.button.MDRaisedButton
+#:import MDLabel kivymd.label.MDLabel
+
+#:import MDNavigationDrawer kivymd.navigationdrawer.MDNavigationDrawer
+#:import NavigationLayout kivymd.navigationdrawer.NavigationLayout
+
+#:import SideBarMenu kivygallery.gallery.sidebarmenu.SideBarMenu
+#:import SideBarLabel kivygallery.gallery.sidebarlabel.SideBarLabel
+
+NavigationLayout:
+    id: nav_layout
+    MDNavigationDrawer:
+        id: nav_drawer
+        NavigationDrawerHeader:
+            title: "Navigation"
+        NavigationDrawerIconButton:
+            id: welcome
+            icon: 'checkbox-blank-circle'
+            text: "Welcome"
+            on_release: 
+                app.root.ids.scr_mngr.transition.direction = 'left'
+                app.root.ids.scr_mngr.current = 'welcome'
+        NavigationDrawerIconButton:
+            icon: 'checkbox-blank-circle'
+            text: "Settings"
+            on_release: 
+                app.root.ids.scr_mngr.transition.direction = 'right'
+                app.root.ids.scr_mngr.current = 'settings'
+        NavigationDrawerIconButton:
+            icon: 'checkbox-blank-circle'
+            text: "Shoot Me"
+            on_release: 
+                app.root.ids.toolbar.size_hint_y = 0
+                app.root.ids.scr_mngr.transition.direction = 'up'
+                app.root.ids.scr_mngr.current = 'photo'
+        NavigationDrawerIconButton:
+            icon: 'checkbox-blank-circle'
+            text: "Gallery"
+            on_release: 
+                app.root.ids.scr_mngr.current = 'gallery'
+        NavigationDrawerIconButton:
+            icon: 'checkbox-blank-circle'
+            text: "Exit"
+            on_release: app.stop()
+    BoxLayout:
+        orientation: 'vertical'
+        Toolbar:
+            id: toolbar
+            title: 'Pi Photobooth'
+            md_bg_color: app.theme_cls.primary_color
+            background_palette: 'Primary'
+            background_hue: '500'
+            left_action_items: [['menu', lambda x: app.root.toggle_nav_drawer()]]
+        ScreenManager:
+            id: scr_mngr
+            MenuScreen:
+                name: "welcome"
+            SettingsScreen:
+                name: "settings"
+            PhotoboothScreen:
+                name: "photo"
+            Screen:
+                name: 'gallery'
+                on_pre_enter: gallery_widget.load()
+                on_leave: gallery_widget.unload()
+                ScrollView:
+                    do_scroll_x: False
+                    GalleryWidget:
+                        id: gallery_widget
+                        ScreenMgr:
+                            media: self.parent.media
+                            
+<NavigationDrawerToolbar>
+    elevation: 0
+    specific_text_color: root.theme_cls.secondary_text_color
+    opposite_colors: False
+    title_theme_color: 'Secondary'
+    md_bg_color: root.theme_cls.bg_light
+    canvas:
+        Color:
+            rgba: root.theme_cls.divider_color
+        Rectangle:
+            pos: self.pos
+            size: self.width, 5
+<NavigationDrawerHeader>
+    elevation: 0
+    specific_text_color: root.theme_cls.secondary_text_color
+    opposite_colors: False
+    title_theme_color: 'Secondary'
+    md_bg_color: root.theme_cls.bg_light
+    canvas:
+        Color:
+            rgba: root.theme_cls.divider_color
+        Rectangle:
+            pos: self.pos
+            size: self.width, 5
+<GalleryWidget>
+    
+<Settings>:
+    on_close:
+        app.root.ids.nav_drawer.active_item._active = False
+        app.root.ids.nav_drawer.active_item = app.root.ids.welcome
+        app.root.ids.nav_drawer.active_item._active = True
+        app.root.ids.scr_mngr.transition.direction = 'left'
+        app.root.ids.scr_mngr.current = "welcome"
+
+<MenuScreen>:
+    RelativeLayout:
+        BoxLayout:
+            canvas:
+            spacing:10
+            orientation: "vertical"
+            MDLabel:
+                size_hint: (1, 1.3)
+                text: "Raspberry Pi Photobooth"
+            BoxLayout:
+                spacing:10
+                orientation: "horizontal"
+                VisualLog:
+                    size_hint:(1.1, 1)
+                MDRaisedButton:
+                    size_hint_y: 1
+                    id: settings_button
+                    text: "Run Photobooth"
+                    on_press:
+                        #On click of this button, we should start taking pictures
+                        app.root.ids.toolbar.size_hint_y = 0
+                        app.root.ids.scr_mngr.transition.direction = 'up'
+                        app.root.ids.scr_mngr.current = 'photo'
+
+<PhotoboothPreview>:
+    MemoryImage:
+        size_hint: (1,1)
+        id: image
+        memory_data: root.image_data
+
+<PhotoboothScreen>:
+    RelativeLayout:
+        PhotoboothPreview:
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            size_hint: (1,1)
+            id: preview
+        Countdown:
+            pos_hint: {'x': .0, 'y': .8}
+            size_hint: (.1, .3)
+            id: countdown
+            starting_number: 5
+        MDRaisedButton:
+            size_hint: (.5, .1)
+            pos_hint: {'center_x': .5, 'y': .05}
+            id: shoot_button
+            text: "Take My Picture"
+            on_press:
+                root.run_booth()
+        MDRaisedButton:
+            size_hint: (.1, .1)
+            pos_hint: {'x': .9, 'y': .9}
+            id: close_button
+            text: "Cancel"
+            on_press: 
+                # Update the nav_drawer back to welcome
+                app.root.ids.nav_drawer.active_item._active = False
+                app.root.ids.nav_drawer.active_item = app.root.ids.welcome
+                app.root.ids.nav_drawer.active_item._active = True
+
+                root.manager.transition.direction = 'down'
+                root.manager.current = 'welcome'
+                app.root.ids.toolbar.size_hint_y = None
+<Countdown>:
+    MDLabel:
+        id: label
+        text: str(root.current) if root.current >= 0 else ''
+        font_size:50
+        outline_width:2
+
+<VisualLog>:
+    cols:1
+    rows:1
+    size_hint: (1, 1)
+    ScrollView:
+        MDLabel:
+            font_size: 12
+            text_size: self.width, None
+            size_hint_y: None
+            height: self.texture_size[1]
+            text: root.output
+
+# Copied from hackerbrot/kivy-gallery
+
+<SideBarScreen>:
+    menu: menu
+    lbl: lbl
+    content: content
+    FloatLayout:
+        id: content
+    FloatLayout:
+        SideBarMenu:
+            id: menu
+            height: root.top - lbl.y
+            y: lbl.top
+        SideBarLabel:
+            id: lbl
+            top: root.top
+
+<SideBarMenu>:
+    orientation: 'horizontal'
+    size_hint_y: None
+
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<SideBarLabel>:
+    size_hint_y: None
+    height: win.Window.height * 0.04
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<SideBarButton>:
+    background_down: self.background_normal
+    
+<Overview>:
+    content: content
+    do_scroll_y: False
+    size_hint: None, None
+    size: win.Window.size
+    GridLayout:
+        id: content
+        rows: 1
+        spacing: win.Window.width * 0.01
+        size_hint_x: None
+        width: self.minimum_width
+
+<OverviewItem>:
+    size_hint_x: None
+    width: win.Window.width * 0.25
+    background_down: self.background_normal
+    text_size: None, self.height * 0.8
+    valign: 'bottom'
+
+<Stage>:
+    content: content
+    anchor_y: 'bottom'
+    Carousel:
+        id: content
+
+<ExplorerItem>:
+    image: image
+    on_size: self.center = win.Window.center
+    size: image.size
+    size_hint: None, None
+
+    Image:
+        id: image
+        size: 400, 400 / self.image_ratio
+        canvas.before:
+            Color:
+                rgba: 0.1, 0.1, 0.1, 1
+            Rectangle:
+                pos: (-2, -2)
+                size: (root.width + 4, root.height + 4)

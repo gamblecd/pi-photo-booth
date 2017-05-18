@@ -1,7 +1,7 @@
 import facebook
 import urllib
 import subprocess
-import urlparse
+from urllib.parse import urlparse
 
 FACEBOOK_APP_ID = ""
 FACEBOOK_APP_SECRET = ""
