@@ -19,7 +19,19 @@ class SettingsScreen(Screen):
     init = False
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
-    
+
+        config = ConfigParser.get_configparser("photobooth_settings")
+        if not config:
+            config = ConfigParser(name="photobooth_settings")
+        config.read('pi_photobooth/booth_config.ini')
+
+        s = Settings()
+        s.add_json_panel('Photo Booth Settings', config, 'pi_photobooth/booth_settings.json')
+        s.add_json_panel('Social Media Settings', config, 'pi_photobooth/social_settings.json')
+        s.add_json_panel('Testing Settings', config, 'pi_photobooth/testing_settings.json')
+        s.add_json_panel('Cognitive Services', config, 'pi_photobooth/cognitive_services.json')
+        self.add_widget(s)
+        
     def on_pre_leave(self):
         logger = logging.getLogger("photobooth.ui")
         logger.debug("Leaving Settings Page")
@@ -28,19 +40,6 @@ class SettingsScreen(Screen):
     def on_enter(self):
         logger = logging.getLogger("photobooth.screenmanager")
         logger.debug("Entering Settings Page")
-
-        if not self.init:
-            config = ConfigParser.get_configparser("photobooth_settings")
-            if not config:
-                config = ConfigParser(name="photobooth_settings")
-            config.read('pi_photobooth/booth_config.ini')
-
-            s = Settings()
-            s.add_json_panel('Photo Booth Settings', config, 'pi_photobooth/booth_settings.json')
-            s.add_json_panel('Social Media Settings', config, 'pi_photobooth/social_settings.json')
-            s.add_json_panel('Testing Settings', config, 'pi_photobooth/testing_settings.json')
-            self.add_widget(s)
-            self.init = True
 
 class PhotoboothScreen(Screen, SettingsBase):
     def __init__(self, **kwargs):

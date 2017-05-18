@@ -1,6 +1,11 @@
 import re
 import cProfile
 
+# config
+from kivy.config import Config
+Config.set('kivy', 'keyboard_mode', 'systemandmulti') # Allow touch keyboard on tft screen
+
+
 from kivymd.theming import ThemeManager
 from kivy.app import App
 

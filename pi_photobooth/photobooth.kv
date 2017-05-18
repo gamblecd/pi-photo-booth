@@ -6,9 +6,6 @@
 
 #:import MDNavigationDrawer kivymd.navigationdrawer.MDNavigationDrawer
 #:import NavigationLayout kivymd.navigationdrawer.NavigationLayout
-#:import NavigationDrawerDivider kivymd.navigationdrawer.NavigationDrawerDivider
-#:import NavigationDrawerToolbar kivymd.navigationdrawer.NavigationDrawerToolbar
-#:import NavigationDrawerSubheader kivymd.navigationdrawer.NavigationDrawerSubheader
 
 #:import SideBarMenu kivygallery.gallery.sidebarmenu.SideBarMenu
 #:import SideBarLabel kivygallery.gallery.sidebarlabel.SideBarLabel
@@ -17,8 +14,8 @@ NavigationLayout:
     id: nav_layout
     MDNavigationDrawer:
         id: nav_drawer
-        NavigationDrawerToolbar:
-            title: "Navigation Drawer"
+        NavigationDrawerHeader:
+            title: "Navigation"
         NavigationDrawerIconButton:
             id: welcome
             icon: 'checkbox-blank-circle'
