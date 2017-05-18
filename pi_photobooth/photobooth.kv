@@ -76,7 +76,30 @@ NavigationLayout:
                         ScreenMgr:
                             media: self.parent.media
                             
-                
+<NavigationDrawerToolbar>
+    elevation: 0
+    specific_text_color: root.theme_cls.secondary_text_color
+    opposite_colors: False
+    title_theme_color: 'Secondary'
+    md_bg_color: root.theme_cls.bg_light
+    canvas:
+        Color:
+            rgba: root.theme_cls.divider_color
+        Rectangle:
+            pos: self.pos
+            size: self.width, 5
+<NavigationDrawerHeader>
+    elevation: 0
+    specific_text_color: root.theme_cls.secondary_text_color
+    opposite_colors: False
+    title_theme_color: 'Secondary'
+    md_bg_color: root.theme_cls.bg_light
+    canvas:
+        Color:
+            rgba: root.theme_cls.divider_color
+        Rectangle:
+            pos: self.pos
+            size: self.width, 5
 <GalleryWidget>
     
 <Settings>:

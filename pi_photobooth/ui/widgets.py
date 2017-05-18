@@ -5,6 +5,7 @@ from kivy.clock import Clock
 from kivy.config import ConfigParser
 from kivy.core.image import Image as CoreImage
 from kivy.graphics.texture import Texture
+from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.uix.relativelayout import RelativeLayout
@@ -13,6 +14,8 @@ from kivymd.grid import SmartTile
 from kivygallery.gallery.screens import ScreenMgr
 from kivygallery.gallery.mediafactory import loadMedia, loadPictures
 
+from kivymd.navigationdrawer import NavigationDrawerHeaderBase
+from kivymd.toolbar import Toolbar
 from ui.util import utils
 from ui.util.settings import SettingsBase
 from preview import Previewer
@@ -22,6 +25,9 @@ import tests.mocks as mocks
 import queue
 
 log = logging.getLogger("photobooth")
+
+class NavigationDrawerHeader(Toolbar,NavigationDrawerHeaderBase):
+    pass
 
 class GalleryWidget(RelativeLayout, SettingsBase):
     image_names = ListProperty([])
