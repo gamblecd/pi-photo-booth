@@ -1,0 +1,17 @@
+[
+    {
+        "type": "bool",
+        "title": "Use Face Detection",
+        "desc": "Prevent Photos from being uploaded if no faces are discovered.",
+        "section": "Cognitive Services",
+        "key": "face_detection"
+    },
+    {
+        "type": "bool",
+        "title": "Use Emotion Detection",
+        "desc": "Continue taking photos until happiness has been achieved.",
+        "section": "Cognitive Services",
+        "key": "emotion_detection"
+    }
+]
+    
