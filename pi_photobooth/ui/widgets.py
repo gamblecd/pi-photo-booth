@@ -73,7 +73,6 @@ class MemoryImage(Image):
             if not self.memory_data:
                 self.blackout()
                 return
-            self.image.image = self.memory_data
             self.texture = CoreImage(self.memory_data, ext='jpg').texture
 
 
