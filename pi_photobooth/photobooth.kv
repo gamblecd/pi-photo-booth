@@ -88,27 +88,28 @@ NavigationLayout:
         app.root.ids.scr_mngr.current = "welcome"
 
 <MenuScreen>:
-    BoxLayout:
-        canvas:
-        spacing:10
-        orientation: "vertical"
-        MDLabel:
-            size_hint: (1, 1.3)
-            text: "Raspberry Pi Photobooth"
+    RelativeLayout:
         BoxLayout:
+            canvas:
             spacing:10
-            orientation: "horizontal"
-            VisualLog:
-                size_hint:(1.1, 1)
-            MDRaisedButton:
-                size_hint_y: 1
-                id: settings_button
-                text: "Run Photobooth"
-                on_press:
-                    #On click of this button, we should start taking pictures
-                    app.root.ids.toolbar.size_hint_y = 0
-                    app.root.ids.scr_mngr.transition.direction = 'up'
-                    app.root.ids.scr_mngr.current = 'photo'
+            orientation: "vertical"
+            MDLabel:
+                size_hint: (1, 1.3)
+                text: "Raspberry Pi Photobooth"
+            BoxLayout:
+                spacing:10
+                orientation: "horizontal"
+                VisualLog:
+                    size_hint:(1.1, 1)
+                MDRaisedButton:
+                    size_hint_y: 1
+                    id: settings_button
+                    text: "Run Photobooth"
+                    on_press:
+                        #On click of this button, we should start taking pictures
+                        app.root.ids.toolbar.size_hint_y = 0
+                        app.root.ids.scr_mngr.transition.direction = 'up'
+                        app.root.ids.scr_mngr.current = 'photo'
 
 <PhotoboothPreview>:
     MemoryImage:

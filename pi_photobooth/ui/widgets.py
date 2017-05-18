@@ -1,4 +1,4 @@
-import logging 
+import logging
 from os import path
 
 from kivy.clock import Clock
@@ -6,11 +6,9 @@ from kivy.config import ConfigParser
 from kivy.core.image import Image as CoreImage
 from kivy.graphics.texture import Texture
 from kivy.uix.widget import Widget
-from kivy.core.image.img_pil import ImageLoaderPIL
 from kivy.uix.image import Image
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.properties import StringProperty,ListProperty,NumericProperty, ObjectProperty
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.properties import StringProperty, ListProperty, NumericProperty, ObjectProperty
 from kivymd.grid import SmartTile
 from kivygallery.gallery.screens import ScreenMgr
 from kivygallery.gallery.mediafactory import loadMedia, loadPictures
@@ -25,7 +23,7 @@ import queue
 
 log = logging.getLogger("photobooth")
 
-class GalleryWidget(BoxLayout, SettingsBase):
+class GalleryWidget(RelativeLayout, SettingsBase):
     image_names = ListProperty([])
     focus = StringProperty('')
     media = ListProperty()
@@ -75,12 +73,11 @@ class MemoryImage(Image):
             if not self.memory_data:
                 self.blackout()
                 return
-            self.memory_data.seek(0)
-            im = CoreImage(self.memory_data, ext='jpg', anim_delay=.01)
-            tex = im.texture
-            self.texture = tex
+            self.image.image = self.memory_data
+            self.texture = CoreImage(self.memory_data, ext='jpg').texture
 
-class VisualLog(GridLayout, logging.Handler):
+
+class VisualLog(RelativeLayout, logging.Handler):
     output = StringProperty('')
     def __init__(self, level=logging.NOTSET, **kwargs):
         super(VisualLog, self).__init__(**kwargs)
@@ -108,7 +105,7 @@ class VisualLog(GridLayout, logging.Handler):
     def format(self, logRecord):
         return "[%s][%s]---%s\n" % (logRecord.levelname, logRecord.name, logRecord.msg)
 
-class PhotoboothPreview(BoxLayout):
+class PhotoboothPreview(RelativeLayout):
     "Updates by name, possible source of performance gain."
     image_data = ObjectProperty("")
     def __init__(self, **kwargs):
@@ -145,7 +142,7 @@ class PhotoboothPreview(BoxLayout):
         except StopIteration:
             self.previewing.cancel()
 
-class ActionsQueue(BoxLayout):
+class ActionsQueue(RelativeLayout):
     "Updates by name, possible source of performance gain."
     def __init__(self, **kwargs):
         super(ActionsQueue, self).__init__(**kwargs)
@@ -159,7 +156,7 @@ class ActionsQueue(BoxLayout):
         combined_image_name = self.actions.combine(self, image_arr)
         post_id = self.actions.upload("fb", combined_image_name, {"event_name":"fb_event"})
         return post_id
-class Countdown(BoxLayout):
+class Countdown(RelativeLayout):
     starting_number = NumericProperty(0)
     current = NumericProperty(-1)
     def __init__(self, starting_number=0, **kwargs):

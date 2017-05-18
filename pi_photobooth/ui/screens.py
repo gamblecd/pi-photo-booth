@@ -1,4 +1,3 @@
-from kivy.clock import Clock
 from kivy.config import ConfigParser
 from kivy.properties import StringProperty,ListProperty
 from kivy.uix.image import Image
@@ -17,19 +16,10 @@ class MenuScreen(Screen):
     pass
 
 class SettingsScreen(Screen):
+    init = False
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
-        config = ConfigParser.get_configparser("photobooth_settings")
-        if not config:
-            config = ConfigParser(name="photobooth_settings")
-        config.read('pi_photobooth/booth_config.ini')
-
-        s = Settings()
-        s.add_json_panel('Photo Booth Settings', config, 'pi_photobooth/booth_settings.json')
-        s.add_json_panel('Social Media Settings', config, 'pi_photobooth/social_settings.json')
-        s.add_json_panel('Testing Settings', config, 'pi_photobooth/testing_settings.json')
-        self.add_widget(s)
-
+    
     def on_pre_leave(self):
         logger = logging.getLogger("photobooth.ui")
         logger.debug("Leaving Settings Page")
@@ -39,6 +29,18 @@ class SettingsScreen(Screen):
         logger = logging.getLogger("photobooth.screenmanager")
         logger.debug("Entering Settings Page")
 
+        if not self.init:
+            config = ConfigParser.get_configparser("photobooth_settings")
+            if not config:
+                config = ConfigParser(name="photobooth_settings")
+            config.read('pi_photobooth/booth_config.ini')
+
+            s = Settings()
+            s.add_json_panel('Photo Booth Settings', config, 'pi_photobooth/booth_settings.json')
+            s.add_json_panel('Social Media Settings', config, 'pi_photobooth/social_settings.json')
+            s.add_json_panel('Testing Settings', config, 'pi_photobooth/testing_settings.json')
+            self.add_widget(s)
+            self.init = True
 
 class PhotoboothScreen(Screen, SettingsBase):
     def __init__(self, **kwargs):
@@ -46,9 +48,11 @@ class PhotoboothScreen(Screen, SettingsBase):
         SettingsBase.__init__(self, "pi_photobooth/booth_config.ini")
         
         super(PhotoboothScreen, self).__init__(**kwargs)
-    
-        self.cam = mocks.PhotoBoothCamera()
-        self.next = None
+
+        if self.config.get("Global", "testing"):
+            self.logger.info("Using Mock data, providing mock Camera")
+            self.cam = mocks.PhotoBoothCamera()
+
         self.photobooth_events = PhotoboothEventDispatcher()
       
     def on_enter(self):
