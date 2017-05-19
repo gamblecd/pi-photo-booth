@@ -57,9 +57,12 @@ To begin a Photo Shoot, press Enter, or a button
 * Compiles Images into Photo Booth print
 * Uploads to Facebook Event
 
-# Future Tasks
+# Future Tasks (see projects)
 
-* Remove use of pygame, it has issues trying to show text over what should essentially be a video stream,
+* Cognitive Services API
+* Adjust interface for Usability
+* Add Functionality for GPIO Buttons.
+* ~~Remove use of pygame, it has issues trying to show text over what should essentially be a video stream~~(Replaced with Kivy)
 * Upload to multiple social sites, Instagram? Twitter?
-* Proper logging to the console, and to the screen
-* Adjust the UI to look cleaner, need to find references for better UI
+* ~~Proper logging to the console, and to the screen~~ (Visual Log on Kivy)
+* ~~Adjust the UI to look cleaner, need to find references for better UI~~ (Resolved With Kivy)
