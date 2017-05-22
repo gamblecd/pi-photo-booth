@@ -22,6 +22,9 @@ from preview import Previewer
 from background.actions import Actions
 import tests.mocks as mocks
 
+from PIL import Image as PILImage
+import io
+
 import queue
 
 log = logging.getLogger("photobooth")
@@ -77,9 +80,10 @@ class MemoryImage(Image):
         """Load image from memory."""
         with self.canvas:
             if not self.memory_data:
+                log.debug("No data, showing blank")
                 self.blackout()
                 return
-            self.texture = CoreImage(self.memory_data, ext='jpg').texture
+            self.texture = CoreImage(self.memory_data, ext='jpeg').texture
 
 
 class VisualLog(RelativeLayout, logging.Handler):
@@ -128,8 +132,15 @@ class PhotoboothPreview(RelativeLayout):
         self.previewing = Clock.schedule_interval(self.update_image, 1 / 30)
         
     def review(self, image_name):
+        log.debug(f"Reviewing {image_name}")
         f = open(image_name,'rb');
-        self.image_data =  self.previewer.produce_frame(f.read())
+        image = PILImage.open(image_name)
+        image = image.resize((600,400))
+        byte_array = io.BytesIO()
+        image.save(byte_array, format="jpeg")
+        byte_array.seek(0)
+        self.image_data = byte_array;
+        log.debug(f"Showing {self.image_data}")
 
     def stop_preview(self):
         log.debug("Stopping Preview")
@@ -139,6 +150,8 @@ class PhotoboothPreview(RelativeLayout):
 
     def set_image(self, image):
         self.image_data = image
+        log.debug(f" Showing {self.image_data}")
+
 
     def update_image(self, instance):
         try:

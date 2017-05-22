@@ -42,7 +42,10 @@ def main():
         gp.check_result(gp.gp_camera_set_config(camera, config, context))
     # capture preview image (not saved to camera memory card)
     print('Capturing preview image')
-    camera_file = gp.check_result(gp.gp_camera_capture_preview(camera, context))
+    camera_file_name = gp.check_result(gp.gp_camera_capture(camera, gp.GP_CAPTURE_IMAGE, context))
+    camera_file = gp.check_result(gp.gp_camera_file_get(camera, camera_file_name.folder, camera_file_name.name, gp.GP_FILE_TYPE_NORMAL, context))
+    camera_file.save("image1.jpg")
+    gp.gp_file_save(camera_file, "image2.jpg")
     file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
     # display image
     data = memoryview(file_data)

@@ -8,6 +8,7 @@ from background.actions import Actions
 import tests.mocks as mocks
 
 from ui.util.settings import SettingsBase
+import models
 import logging
 import os
 from pathlib import Path
@@ -48,10 +49,12 @@ class PhotoboothScreen(Screen, SettingsBase):
         
         super(PhotoboothScreen, self).__init__(**kwargs)
 
-        if self.config.get("Global", "testing"):
+        if self.config.get("Global", "testing") == "1":
             self.logger.info("Using Mock data, providing mock Camera")
             self.cam = mocks.PhotoBoothCamera()
-
+        else:
+            self.cam = models.PhotoBoothCamera()
+            self.cam.init()
         self.photobooth_events = PhotoboothEventDispatcher()
       
     def on_enter(self):
@@ -130,7 +133,7 @@ class PhotoboothScreen(Screen, SettingsBase):
             #TODO RE handle dupse
             imglocation = "{0}/{1}".format(folder_name, file_data.name)
         img.save(imglocation)
-        self.logger.debug("Saved")
+        self.logger.debug(f"Saved {imglocation}")
         return imglocation
 
 class BoothData(dict):
