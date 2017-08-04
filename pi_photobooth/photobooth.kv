@@ -1,54 +1,43 @@
 #:kivy 1.10.0
 #:import win kivy.core.window
 
-#:import MDRaisedButton kivymd.button.MDRaisedButton
-#:import MDLabel kivymd.label.MDLabel
-
-#:import MDNavigationDrawer kivymd.navigationdrawer.MDNavigationDrawer
-#:import NavigationLayout kivymd.navigationdrawer.NavigationLayout
+#:import NavigationDrawer kivy.garden.navigationdrawer.NavigationDrawer
 
 #:import SideBarMenu kivygallery.gallery.sidebarmenu.SideBarMenu
 #:import SideBarLabel kivygallery.gallery.sidebarlabel.SideBarLabel
 
-NavigationLayout:
-    id: nav_layout
-    MDNavigationDrawer:
+NavigationDrawer:
+    id: drawer
+    BoxLayout:
+        orientation: 'vertical'
         id: nav_drawer
-        NavigationDrawerHeader:
-            title: "Navigation"
-        NavigationDrawerIconButton:
-            id: welcome
-            icon: 'checkbox-blank-circle'
+        Label:
+            text: "Navigation"
+        Button:
             text: "Welcome"
             on_release: 
                 app.root.ids.scr_mngr.transition.direction = 'left'
                 app.root.ids.scr_mngr.current = 'welcome'
-        NavigationDrawerIconButton:
-            icon: 'checkbox-blank-circle'
+        Button:
             text: "Settings"
             on_release: 
                 app.root.ids.scr_mngr.transition.direction = 'right'
                 app.root.ids.scr_mngr.current = 'settings'
-        NavigationDrawerIconButton:
-            icon: 'checkbox-blank-circle'
+        Button:
             text: "Shoot Me"
             on_release: 
                 app.root.ids.toolbar.size_hint_y = 0
                 app.root.ids.scr_mngr.transition.direction = 'up'
                 app.root.ids.scr_mngr.current = 'photo'
-        NavigationDrawerIconButton:
-            icon: 'checkbox-blank-circle'
+        Button:
             text: "Exit"
             on_release: app.stop()
     BoxLayout:
         orientation: 'vertical'
-        Toolbar:
+        Button:
             id: toolbar
-            title: 'Pi Photobooth'
-            md_bg_color: app.theme_cls.primary_color
-            background_palette: 'Primary'
-            background_hue: '500'
-            left_action_items: [['menu', lambda x: app.root.toggle_nav_drawer()]]
+            text: 'Pi Photobooth Menu'
+            on_press: root.toggle_state()
         ScreenManager:
             id: scr_mngr
             MenuScreen:
@@ -67,37 +56,8 @@ NavigationLayout:
                         id: gallery_widget
                         ScreenMgr:
                             media: self.parent.media
-                            
-<NavigationDrawerToolbar>
-    elevation: 0
-    specific_text_color: root.theme_cls.secondary_text_color
-    opposite_colors: False
-    title_theme_color: 'Secondary'
-    md_bg_color: root.theme_cls.bg_light
-    canvas:
-        Color:
-            rgba: root.theme_cls.divider_color
-        Rectangle:
-            pos: self.pos
-            size: self.width, 5
-<NavigationDrawerHeader>
-    elevation: 0
-    specific_text_color: root.theme_cls.secondary_text_color
-    opposite_colors: False
-    title_theme_color: 'Secondary'
-    md_bg_color: root.theme_cls.bg_light
-    canvas:
-        Color:
-            rgba: root.theme_cls.divider_color
-        Rectangle:
-            pos: self.pos
-            size: self.width, 5
-    
 <Settings>:
     on_close:
-        app.root.ids.nav_drawer.active_item._active = False
-        app.root.ids.nav_drawer.active_item = app.root.ids.welcome
-        app.root.ids.nav_drawer.active_item._active = True
         app.root.ids.scr_mngr.transition.direction = 'left'
         app.root.ids.scr_mngr.current = "welcome"
 
@@ -107,7 +67,7 @@ NavigationLayout:
             canvas:
             spacing:10
             orientation: "vertical"
-            MDLabel:
+            Label:
                 size_hint: (1, 1.3)
                 text: "Raspberry Pi Photobooth"
             BoxLayout:
@@ -115,7 +75,7 @@ NavigationLayout:
                 orientation: "horizontal"
                 VisualLog:
                     size_hint:(1.1, 1)
-                MDRaisedButton:
+                Button:
                     size_hint_y: 1
                     id: settings_button
                     text: "Run Photobooth"
@@ -142,29 +102,24 @@ NavigationLayout:
             size_hint: (.1, .3)
             id: countdown
             starting_number: 5
-        MDRaisedButton:
+        Button:
             size_hint: (.5, .1)
             pos_hint: {'center_x': .5, 'y': .05}
             id: shoot_button
             text: "Take My Picture"
             on_press:
                 root.run_booth()
-        MDRaisedButton:
+        Button:
             size_hint: (.1, .1)
             pos_hint: {'x': .9, 'y': .9}
             id: close_button
             text: "Cancel"
             on_press: 
-                # Update the nav_drawer back to welcome
-                app.root.ids.nav_drawer.active_item._active = False
-                app.root.ids.nav_drawer.active_item = app.root.ids.welcome
-                app.root.ids.nav_drawer.active_item._active = True
-
                 root.manager.transition.direction = 'down'
                 root.manager.current = 'welcome'
                 app.root.ids.toolbar.size_hint_y = None
 <Countdown>:
-    MDLabel:
+    Label:
         id: label
         text: str(root.current) if root.current >= 0 else ''
         font_size:50
@@ -175,7 +130,7 @@ NavigationLayout:
     rows:1
     size_hint: (1, 1)
     ScrollView:
-        MDLabel:
+        Label:
             font_size: 12
             text_size: self.width, None
             size_hint_y: None

@@ -10,12 +10,9 @@ from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.properties import StringProperty, ListProperty, NumericProperty, ObjectProperty
-from kivymd.grid import SmartTile
 from kivygallery.gallery.screens import ScreenMgr
 from kivygallery.gallery.mediafactory import loadMedia, loadPictures
 
-from kivymd.navigationdrawer import NavigationDrawerHeaderBase
-from kivymd.toolbar import Toolbar
 from ui.util import utils
 from ui.util.settings import SettingsBase
 from preview import Previewer
@@ -28,9 +25,6 @@ import io
 import queue
 
 log = logging.getLogger("photobooth")
-
-class NavigationDrawerHeader(Toolbar,NavigationDrawerHeaderBase):
-    pass
 
 class GalleryWidget(RelativeLayout, SettingsBase):
     image_names = ListProperty([])
@@ -68,7 +62,7 @@ class GalleryWidget(RelativeLayout, SettingsBase):
 
 class MemoryImage(Image):
     """Display an image already loaded in memory."""
-    memory_data = ObjectProperty("")
+    memory_data = ObjectProperty(None)
 
     def __init__(self,**kwargs):
         super(MemoryImage, self).__init__(**kwargs)
@@ -78,12 +72,21 @@ class MemoryImage(Image):
 
     def on_memory_data(self, *args):
         """Load image from memory."""
-        with self.canvas:
-            if not self.memory_data:
-                log.debug("No data, showing blank")
-                self.blackout()
-                return
-            self.texture = CoreImage(self.memory_data, ext='jpeg').texture
+        data = self.memory_data
+        if not data:
+             log.debug("No data, showing blank");
+             self.blackout
+        if data != '':
+            with self.canvas:
+                if not self.memory_data:
+                    log.debug("No data, showing blank")
+                    self.blackout()
+                    return
+                byte_array = data
+                byte_array.seek(0)
+                img = CoreImage(byte_array, ext="jpg")
+                byte_array.flush();
+                self.texture = img.texture
 
 
 class VisualLog(RelativeLayout, logging.Handler):
@@ -122,6 +125,10 @@ class PhotoboothPreview(RelativeLayout):
         self.cam = mocks.PhotoBoothCamera()
         self.previewer = Previewer()
         self.previewing = None
+        
+        memoryImage = MemoryImage()
+        self.bind(image_data=memoryImage.setter("memory_data"))
+        self.add_widget(memoryImage)
 
     def preview(self, generator=None):
         log.debug("Starting Preview")

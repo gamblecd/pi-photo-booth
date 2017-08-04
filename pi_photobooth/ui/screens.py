@@ -57,6 +57,10 @@ class PhotoboothScreen(Screen, SettingsBase):
             self.cam.init()
         self.photobooth_events = PhotoboothEventDispatcher()
       
+    def on_parent(self, instance, something):
+        pass
+        #self.ids["preview"].preview(self.cam.generate_preview())
+
     def on_enter(self):
         self.logger.info("Entering {}".format(self.name))
 
