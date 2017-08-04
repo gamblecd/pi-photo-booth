@@ -8,6 +8,7 @@ from kivy.uix.image import Image
 from kivy.uix.floatlayout import FloatLayout
 from PIL import Image as PILImage
 from ui.widgets import PhotoboothPreview
+from ui.screens import PhotoboothScreen
 class MemoryImage(Image):
     memory_data = ObjectProperty(None)
 
@@ -28,8 +29,9 @@ class MemoryImage(Image):
 class ImageApp(App):
 
     def build(self):
+        screen = PhotoboothScreen()
         widget = PhotoboothPreview()
-        widget.preview()
+        widget.preview(generator=self.cam.generate_preview())
         memImage = MemoryImage()
         widget.bind(image_data=memImage.setter("memory_data"))
         layout= FloatLayout()
