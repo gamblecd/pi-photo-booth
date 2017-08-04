@@ -133,9 +133,8 @@ class PhotoboothPreview(RelativeLayout):
         
     def review(self, image_name):
         log.debug(f"Reviewing {image_name}")
-        f = open(image_name,'rb');
         image = PILImage.open(image_name)
-        image = image.resize((600,400))
+        image = image.resize((800,480))
         byte_array = io.BytesIO()
         image.save(byte_array, format="jpeg")
         byte_array.seek(0)

@@ -38,11 +38,6 @@ NavigationLayout:
                 app.root.ids.scr_mngr.current = 'photo'
         NavigationDrawerIconButton:
             icon: 'checkbox-blank-circle'
-            text: "Gallery"
-            on_release: 
-                app.root.ids.scr_mngr.current = 'gallery'
-        NavigationDrawerIconButton:
-            icon: 'checkbox-blank-circle'
             text: "Exit"
             on_release: app.stop()
     BoxLayout:
@@ -97,7 +92,6 @@ NavigationLayout:
         Rectangle:
             pos: self.pos
             size: self.width, 5
-<GalleryWidget>
     
 <Settings>:
     on_close:

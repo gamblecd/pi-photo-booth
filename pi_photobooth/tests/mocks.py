@@ -95,7 +95,7 @@ class PhotoBoothCamera:
 
     def frame_gen(self):
         m1 = mockImage("pi_photobooth/tests/imgs/test.jpg")
-        m2 = mockImage("pi_photobooth/tests/imgs/test1.png")
+        m2 = mockImage("pi_photobooth/tests/imgs/test.jpg")
         switch = False
         while True:
             if switch:
