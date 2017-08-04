@@ -7,40 +7,34 @@ from kivy.properties import ObjectProperty
 from kivy.uix.image import Image
 from kivy.uix.floatlayout import FloatLayout
 from PIL import Image as PILImage
-
+from ui.widgets import PhotoboothPreview
 class MemoryImage(Image):
     memory_data = ObjectProperty(None)
 
     def __init__(self,**kwargs):
         super(MemoryImage, self,).__init__(**kwargs)
-        img_data = open("tests/imgs/test1_photoBooth.jpg",  "rb").read()
-        self.memory_data = img_data
-    
+        #img_data = open("tests/imgs/test1_photoBooth.jpg",  "rb").read()
+
     def on_memory_data(self, *args):
         data = self.memory_data
-        
-        img = PILImage.open("tests/imgs/test1_photoBooth.jpg")
-        img = img.resize((800,480))
-        with self.canvas:
-            print(img.height)
-            print(img.width)
-            byte_arry = io.BytesIO()
-            img.save(byte_arry, format="jpeg")
-            byte_arry.seek(0)
-            img2 = CoreImage(byte_arry, ext="jpg")
-            print(img.height)
-            print(img.width)
-            img = None
-            byte_arry.flush();
-            self.texture = img2.texture
+        if data != '':
+            with self.canvas:
+                byte_arry = data
+                byte_arry.seek(0)
+                img2 = CoreImage(byte_arry, ext="jpg")
+                byte_arry.flush();
+                self.texture = img2.texture
 
 class ImageApp(App):
 
     def build(self):
-        img = Image(source="tests/imgs/test1_photoBooth.jpg", mipmap=True,size=(600,400), allow_stretch=True)
+        widget = PhotoboothPreview()
+        widget.preview()
+        memImage = MemoryImage()
+        widget.bind(image_data=memImage.setter("memory_data"))
         layout= FloatLayout()
         # layout.add_widget(img)
-        layout.add_widget(MemoryImage(size=(800,600)))
+        layout.add_widget(memImage)
         return layout
 
 if __name__ == '__main__':
