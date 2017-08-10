@@ -75,7 +75,7 @@ class MemoryImage(Image):
         data = self.memory_data
         if not data:
              log.debug("No data, showing blank");
-             self.blackout
+             self.blackout()
         if data != '':
             with self.canvas:
                 if not self.memory_data:

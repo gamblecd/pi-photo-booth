@@ -4,6 +4,14 @@ import tests.mocks as mocks
 import logging
 from kivy.config import ConfigParser
 from ui.util.settings import SettingsBase
+import smtplib
+
+from os.path import basename
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
+
 
 class Actions(SettingsBase):
     def __init__(self, image_proc=ImageProcessor()):
@@ -22,6 +30,14 @@ class Actions(SettingsBase):
                 self.fb = FacebookUploader()
             else:
                 self.fb = mocks.FacebookUploader()
+        if section == "Email Account":
+            if key == "username":
+                self.logger.info(f"Setting Email Account User to usage to {value}")
+                self.email_un = value
+            elif key == "password":
+                self.email_pw = value
+            elif key == "send_from_account":
+                self.email_from = value
 
     def define_name(self, img_arr):
         if not img_arr:
@@ -56,6 +72,35 @@ class Actions(SettingsBase):
             return ""
         imgname = self.combine(img_arr)
         self.upload("fb", imgname, {"event_name":event_name})
+
+    def email_picture_to_address(self, img_name, email_addresses):
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        username = self.config.get("Email Account", "username")
+        password = self.config.get("Email Account", "password")
+        send_from = self.config.get("Email Account", "send_from_account")
+        server.login(username, password)
+        msg = MIMEMultipart()
+        msg['From'] = send_from
+        msg['To'] = COMMASPACE.join(email_addresses)
+        msg['Date'] = formatdate(localtime=True)
+        msg['Subject'] = "Photobooth Attached"
+
+        msg.attach(MIMEText("Attached is your email"))
+
+        for f in [img_name]:
+            with open(f, "rb") as fil:
+                part = MIMEApplication(
+                    fil.read(),
+                    Name=basename(f)
+                )
+                part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
+                msg.attach(part)
+
+
+        server.sendmail(send_from, email_addresses, msg.as_string())
+        server.close()
+        pass
 
     def _combine_and_upload_to_event(self, img_arr, event_name):
         if not img_arr:

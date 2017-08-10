@@ -1,16 +1,11 @@
 """Models for Interacting with the Gphoto Cameras
 """
-import gphoto2 as gp
 
 class PhotoBoothContext:
     def getContext():
         return gp.Context();
 
 class PhotoBoothCamera:
-
-    def __init__(self, context=gp.Context()):
-        self.context = context
-        self.initiated = False
 
     def init(self):
         self.initiated = True

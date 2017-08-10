@@ -34,10 +34,16 @@ NavigationDrawer:
             on_release: app.stop()
     BoxLayout:
         orientation: 'vertical'
-        Button:
+        BoxLayout:
             id: toolbar
-            text: 'Pi Photobooth Menu'
-            on_press: root.toggle_state()
+            orientation: 'horizontal'
+            size_hint_y: .1
+            Button:
+                text: 'Menu'
+                size_hint_x: .2
+                on_press: root.toggle_state()
+            Label:
+                text: "Photobooth"
         ScreenManager:
             id: scr_mngr
             MenuScreen:
@@ -86,6 +92,12 @@ NavigationDrawer:
                         app.root.ids.scr_mngr.current = 'photo'
 
 <PhotoboothPreview>:
+    canvas:
+        Color:
+            rgba: 0, 0, 0, 0
+        Rectangle:
+            pos: self.pos
+            size: self.size
     MemoryImage:
         size_hint: (1,1)
         id: image
@@ -97,6 +109,15 @@ NavigationDrawer:
             pos_hint: {'center_x': .5, 'center_y': .5}
             size_hint: (1,1)
             id: preview
+        BoxLayout:
+            pos_hint: {'center_x': .5, 'top': 1}
+            size_hint_y:.1            
+            orientation: 'horizontal'
+            Label:
+                id:title
+                text: ''
+                font_size:50
+                outline_width:2
         Countdown:
             pos_hint: {'x': .0, 'y': .8}
             size_hint: (.1, .3)

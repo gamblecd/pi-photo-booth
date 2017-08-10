@@ -1,6 +1,11 @@
 from kivy.config import ConfigParser
 from kivy.properties import StringProperty,ListProperty
 from kivy.uix.image import Image
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import Screen
 from kivy.uix.settings import Settings
 from .events import PhotoboothEventDispatcher
@@ -56,10 +61,6 @@ class PhotoboothScreen(Screen, SettingsBase):
             self.cam = models.PhotoBoothCamera()
             self.cam.init()
         self.photobooth_events = PhotoboothEventDispatcher()
-      
-    def on_parent(self, instance, something):
-        pass
-        #self.ids["preview"].preview(self.cam.generate_preview())
 
     def on_enter(self):
         self.logger.info("Entering {}".format(self.name))
@@ -81,6 +82,9 @@ class PhotoboothScreen(Screen, SettingsBase):
         if not new_state:
             self.photobooth_events.dispatch("on_complete_all")
             return
+        new_state.setup(state_data)
+        self.logger.debug("Setting state to"+str(state_data.title))
+        self.ids["title"].text = state_data.title
         new_state.run(state_data, self)
 
     def reset(self):
@@ -144,6 +148,7 @@ class BoothData(dict):
     def __init__(self, config, handle_state_end=None, *args, **kw):
         super(BoothData,self).__init__(*args, **kw)
         self.images = []
+        self.title = ''
         self.settings = config
         self.handle_state_end = handle_state_end
 
@@ -160,7 +165,9 @@ class BoothState():
     '''
 
 class EmptyState(BoothState):
-    
+    def setup(state_data):
+        state_data.title= "Waiting"
+
     def run(state_data, screen):
         screen.reset()
         state_data.handle_state_end(EmptyState, state_data)
@@ -169,6 +176,8 @@ class EmptyState(BoothState):
         return None
 
 class InitialState(BoothState):
+    def setup(state_data):
+        state_data.title= "Starting"
 
     def run(state_data, screen):
         #Increment this run
@@ -177,12 +186,13 @@ class InitialState(BoothState):
             times_through = 0
         state_data["count"] =  times_through+1
         state_data.handle_state_end(InitialState, state_data)
-
         
     def next_state(state_data):
         return PreviewState
 
 class PreviewState(BoothState):
+    def setup(state_data):
+        state_data.title= "Framing Picture " + str(state_data["count"]) + " of " + str(state_data["frame_count"])
 
     def run(state_data, screen):
         def cb():
@@ -193,6 +203,8 @@ class PreviewState(BoothState):
         pass            
 
 class CaptureState(BoothState):
+    def setup(state_data):
+        state_data.title= "Taking Picture!"
 
     def run(state_data, screen):
         image_name = screen.take_picture()
@@ -206,6 +218,8 @@ class CaptureState(BoothState):
         pass            
 
 class ReviewState(BoothState):
+    def setup(state_data):
+        state_data.title= "Look at That!"
 
     def run(state_data, screen):
         def cb():
@@ -218,9 +232,70 @@ class ReviewState(BoothState):
             return InitialState
         else:
             #Return end state
-            return ActionState
+            return InformationGrabState
 
+import re
+EMAIL_REGEX = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+
+class InformationGrabState(BoothState):
+
+    def setup(state_data):
+        state_data.title = "Do you want a copy?"
+
+    def run(state_data, screen):
+        popup = None
+        textinput = None
+        errLabel = None
+        def clicked_send_email(instance):
+            email = textinput.text
+            email_addresses = list(filter(bool, email.split(",")))
+            for e in email_addresses:
+                if e and not EMAIL_REGEX.match(e):
+                    errLabel.text = "Invalid Email Address(es)"
+                    return
+            state_data["emails"] = email_addresses
+            popup.dismiss()
+            state_data.handle_state_end(InformationGrabState, state_data)
+        def no_thanks_clicked(instance):
+            state_data["email"] = None
+            popup.dismiss()
+            state_data.handle_state_end(InformationGrabState, state_data)
+
+        box = BoxLayout(orientation='vertical')
+        buttonLayout = BoxLayout(orientation="horizontal")
+
+        label = Label(text="Enter your email addresses. For multiple email addresses, separate by a comma. \n\ne.g. example@gmail.com,example2@gmail.com")
+        label.bind(size=label.setter('text_size')) 
+
+        errLabel = Label(id="error",text="", color=(1,0,0,1))
+        errLabel.bind(size=errLabel.setter('text_size'))
+
+        textinput = TextInput(multiline=False,hint_text='example@gmail.com')
+
+        noThanksButton = Button(text="No thanks!")
+        yes_pleaseButton = Button(text="Yes Please!")
+
+        yes_pleaseButton.bind(on_press=clicked_send_email)
+        noThanksButton.bind(on_press=no_thanks_clicked)
+
+        buttonLayout.add_widget(noThanksButton)
+        buttonLayout.add_widget(yes_pleaseButton)
+
+        box.add_widget(label)
+        box.add_widget(errLabel)
+        box.add_widget(textinput)
+        box.add_widget(buttonLayout)
+
+        popup = Popup(title="Do you want a copy?", auto_dismiss=False, content=box,size_hint=(None, None), size=(500, 400), )
+
+        popup.open()
+
+        pass
+    def next_state(state_data):
+        return ActionState
 class ActionState(BoothState):
+    def setup(state_data):
+        pass
 
     def run(state_data, screen):
         screen.logger.info("Running Action State")
@@ -228,7 +303,10 @@ class ActionState(BoothState):
 
         #TODO Actions
         actions = Actions()
-        actions.combine_and_upload_to_event(state_data.images, state_data.settings.get("Social", "event_name"))
+        img_name = actions.combine(state_data.images)
+        if state_data["emails"]:
+            #Emails the
+            actions.email_picture_to_address(img_name, state_data["emails"])
 
         state_data.handle_state_end(ActionState, state_data)
 
