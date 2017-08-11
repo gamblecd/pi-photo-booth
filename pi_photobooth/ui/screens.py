@@ -12,6 +12,8 @@ from .events import PhotoboothEventDispatcher
 from background.actions import Actions
 import tests.mocks as mocks
 
+from datetime import datetime
+
 from ui.util.settings import SettingsBase
 import models
 import logging
@@ -149,9 +151,10 @@ class PhotoboothScreen(Screen, SettingsBase):
         img_path = Path(imglocation)
         if not os.path.exists(img_path.parent):
             os.makedirs(img_path.parent)
-        if os.path.exists(img_path.parent):
-            #TODO RE handle dupse
-            imglocation = "{0}/{1}".format(folder_name, file_data.name)
+        if os.path.exists(img_path):
+            time = datetime.now().time()
+            time_str = str(time.hour) + str(time.minute) + str(time.second)
+            imglocation = "{0}/{1}_{2}".format(folder_name, time_str, file_data.name)
         img.save(imglocation)
         self.logger.debug(f"Saved {imglocation}")
         return imglocation
@@ -258,12 +261,16 @@ class InformationGrabState(BoothState):
         popup = None
         textinput = None
         errLabel = None
+        yes_pleaseButton = None
+        noThanksButton = None
         def clicked_send_email(instance):
+            yes_pleaseButton.disabled = True
             email = textinput.text
             email_addresses = list(filter(bool, email.split(",")))
             for e in email_addresses:
                 if e and not EMAIL_REGEX.match(e):
                     errLabel.text = "Invalid Email Address(es)"
+                    yes_pleaseButton.disabled = False
                     return
             state_data["emails"] = email_addresses
             popup.dismiss()

@@ -84,9 +84,9 @@ class Actions(SettingsBase):
         msg['From'] = send_from
         msg['To'] = COMMASPACE.join(email_addresses)
         msg['Date'] = formatdate(localtime=True)
-        msg['Subject'] = "Photobooth Attached"
+        msg['Subject'] = "Photobooth Picture Attached"
 
-        msg.attach(MIMEText("Attached is your email"))
+        msg.attach(MIMEText("Attached is your  picture, I hope you enjoy it!. If you want an individual image let me know and I can pull it off the computer for you."))
 
         for f in [img_name]:
             with open(f, "rb") as fil:
