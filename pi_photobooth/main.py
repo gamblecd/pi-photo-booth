@@ -25,4 +25,10 @@ class PhotoboothApp(App):
         self.profile.disable()
         self.profile.dump_stats('myapp.profile')
 if __name__ == '__main__':
-    PhotoboothApp().run()
+    should_exit = False
+    while not should_exit:
+        try:
+            PhotoboothApp().run()
+            should_exit = True
+        except NameError as e:
+            print("Caught Major error {}".format(e))

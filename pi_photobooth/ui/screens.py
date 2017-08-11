@@ -53,14 +53,22 @@ class PhotoboothScreen(Screen, SettingsBase):
         SettingsBase.__init__(self, "pi_photobooth/booth_config.ini")
         
         super(PhotoboothScreen, self).__init__(**kwargs)
-
-        if self.config.get("Global", "testing") == "1":
-            self.logger.info("Using Mock data, providing mock Camera")
-            self.cam = mocks.PhotoBoothCamera()
-        else:
-            self.cam = models.PhotoBoothCamera()
-            self.cam.init()
+        self.config.add_callback(self.settings_updated)
+        self.settings_updated("Global", "testing", self.config.get("Global", "testing"));
         self.photobooth_events = PhotoboothEventDispatcher()
+
+    def settings_updated(self, section, key, value):
+        if section == "Global" and key == "testing":
+            we_are_testing = bool(int(value))
+            if we_are_testing:
+                self.cam = mocks.PhotoBoothCamera()
+            else:
+                try:    
+                    self.cam = models.PhotoBoothCamera()
+                    self.cam.init()
+                    self.successful_init = True
+                except Exception as e:
+                    self.logger.error("ran into a camera issue {}".format(e))
 
     def on_enter(self):
         self.logger.info("Entering {}".format(self.name))
@@ -94,14 +102,18 @@ class PhotoboothScreen(Screen, SettingsBase):
         pass
    
     def run_booth(self):
-        self.hide_shoot_button()
-        booth_images = BoothData(self.config, self.on_change_state)
-        frame_count = self.config.getint("Settings", "frame_count")
-        booth_images["frame_count"] = frame_count
-        self.logger.info(f"Taking {frame_count} pictures")
+        try:
+            if not self.successful_init:
+                self.cam.init()
+            self.hide_shoot_button()
+            booth_images = BoothData(self.config, self.on_change_state)
+            frame_count = self.config.getint("Settings", "frame_count")
+            booth_images["frame_count"] = frame_count
+            self.logger.info(f"Taking {frame_count} pictures")
 
-        InitialState.run(booth_images, self)
-    
+            InitialState.run(booth_images, self)
+        except Exception as e:
+            self.logger.error("Could not run the photobooth {}".format(e))
     def run_preview(self, seconds=4, callback=None):
         self.logger.info(f"Run Preview for {seconds} seconds.")
         def cb():
