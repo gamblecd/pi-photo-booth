@@ -269,7 +269,7 @@ class InformationGrabState(BoothState):
             popup.dismiss()
             state_data.handle_state_end(InformationGrabState, state_data)
         def no_thanks_clicked(instance):
-            state_data["email"] = None
+            state_data["emails"] = None
             popup.dismiss()
             state_data.handle_state_end(InformationGrabState, state_data)
 
@@ -316,7 +316,7 @@ class ActionState(BoothState):
         #TODO Actions
         actions = Actions()
         img_name = actions.combine(state_data.images)
-        if state_data["emails"]:
+        if "emails" in state_data and state_data["emails"]:
             #Emails the
             actions.email_picture_to_address(img_name, state_data["emails"])
 

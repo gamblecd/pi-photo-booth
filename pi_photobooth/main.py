@@ -14,6 +14,7 @@ from ui.screens import *
 SettingsScreen()
 
 class PhotoboothApp(App):
+    title = "Photobooth"
     def __init__(self, **kwargs):
         super(PhotoboothApp, self).__init__(**kwargs)
 
@@ -30,5 +31,6 @@ if __name__ == '__main__':
         try:
             PhotoboothApp().run()
             should_exit = True
-        except NameError as e:
+        except Exception as e:
             print("Caught Major error {}".format(e))
+            Aop.get_running_app().stop()
