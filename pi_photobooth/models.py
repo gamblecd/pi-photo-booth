@@ -1,3 +1,4 @@
+import gphoto2 as gp
 """Models for Interacting with the Gphoto Cameras
 """
 
