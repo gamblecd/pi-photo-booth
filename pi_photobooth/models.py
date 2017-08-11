@@ -7,7 +7,10 @@ class PhotoBoothContext:
         return gp.Context();
 
 class PhotoBoothCamera:
-
+    def __init__(self, context=gp.Context()):
+        self.context = context
+        self.initiated = False
+ 
     def init(self):
         self.initiated = True
         self.set_camera(gp.Camera())
